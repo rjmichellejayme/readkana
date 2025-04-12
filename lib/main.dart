@@ -1,7 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'app.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Keep splash screen up while initializing
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Initialize services
+  await _initializeServices();
+
+  // Run app
+  runApp(const App());
+
+  // Remove splash screen
+  FlutterNativeSplash.remove();
+}
+
+Future<void> _initializeServices() async {
+  try {
+    // Initialize SharedPreferences
+    await SharedPreferences.getInstance();
+
+    // Set preferred orientations
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    // Configure system UI
+    await SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+      overlays: [SystemUiOverlay.top],
+    );
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+  } catch (e) {
+    debugPrint('Error during initialization: $e');
+    // Show error UI if needed
+  }
 }
 
 class MyApp extends StatelessWidget {
