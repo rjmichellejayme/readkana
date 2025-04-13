@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
-import 'package:readkana/routes/app_router.dart';
-import 'package:readkana/services/auth_service.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,21 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              // Custom illustration would go here
-              const SizedBox(height: 20),
               const Text(
                 'Welcome Back',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const Text(
-                'sign in to access your account',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -59,21 +48,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextFormField(
                       decoration: InputDecoration(
-                        hintText: 'Full name',
+                        hintText: 'Email',
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        suffixIcon: const Icon(
-                          Icons.person_outline,
-                          color: Colors.grey,
-                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your full name';
+                          return 'Please enter your email';
                         }
                         return null;
                       },
@@ -88,10 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
-                        ),
-                        suffixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: Colors.grey,
                         ),
                       ),
                       validator: (value) {
@@ -143,9 +124,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          await Provider.of<AuthService>(context, listen: false).login();
+                          await Provider.of<AuthService>(context, listen: false)
+                              .login();
                           if (mounted) {
-                            Navigator.pushReplacementNamed(context, AppRouter.home);
+                            Navigator.pushReplacementNamed(context, '/home');
                           }
                         }
                       },
@@ -160,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Log in',
+                            'Log In',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -185,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, AppRouter.signup);
+                            Navigator.pushReplacementNamed(context, '/signup');
                           },
                           child: const Text(
                             'Register Now',

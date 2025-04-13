@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
-import 'package:readkana/routes/app_router.dart';
-import 'package:readkana/services/auth_service.dart';
+import '../services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -33,8 +32,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              // Custom illustration can be added here
-              const SizedBox(height: 20),
               const Text(
                 'Get Started',
                 style: TextStyle(
@@ -165,12 +162,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate() && _agreedToTerms) {
-                          await Provider.of<AuthService>(context, listen: false).signup();
-                          if (mounted) {
-                            Navigator.pushReplacementNamed(context, AppRouter.home);
-                          }
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() &&
+                            _agreedToTerms) {
+                          Navigator.pushReplacementNamed(context, '/login');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -191,11 +186,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton(
-                      onPressed: () async {
-                        await Provider.of<AuthService>(context, listen: false).signup();
-                        if (mounted) {
-                          Navigator.pushReplacementNamed(context, AppRouter.home);
-                        }
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/home');
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -226,7 +218,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.pushReplacementNamed(context, AppRouter.login);
+                                Navigator.pushReplacementNamed(
+                                    context, '/login');
                               },
                           ),
                         ],

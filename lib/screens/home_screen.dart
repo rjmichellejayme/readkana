@@ -98,13 +98,17 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search, color: Color(0xFFE091A0)),
             onPressed: () {
-              // Handle search
+              // Navigate to Search Screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
             },
           ),
           IconButton(
             icon: const Icon(Icons.filter_list, color: Color(0xFFE091A0)),
             onPressed: () {
-              // Handle filter
+              // Handle filter (can be implemented later)
             },
           ),
         ],
@@ -140,26 +144,28 @@ class HomeScreen extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 60),
-        // Add book button (large pink circle with plus)
-        Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE091A0),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.add,
-            size: 50,
-            color: Colors.white,
+        GestureDetector(
+          onTap: () => _handleAddBook(context),
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE091A0),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              size: 50,
+              color: Colors.white,
+            ),
           ),
         ),
         const SizedBox(height: 40),
@@ -171,41 +177,6 @@ class HomeScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-        const Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: Text(
-              'Edit Shelf',
-              style: TextStyle(
-                color: Color(0xFFE091A0),
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: 6, // Show 6 empty placeholder boxes
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: index % 2 == 0
-                      ? const Color(0xFFE091A0).withOpacity(0.3)
-                      : const Color(0xFFFFE4C4),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              );
-            },
-          ),
-        ),
       ],
     );
   }
@@ -214,58 +185,6 @@ class HomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Current book with progress
-        if (readingService.currentBook != null)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE091A0),
-                    shape: BoxShape.circle,
-                    image: readingService.currentBook!.coverPath != null
-                        ? DecorationImage(
-                            image: FileImage(
-                                File(readingService.currentBook!.coverPath!)),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  readingService.currentBook!.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  readingService.currentBook!.author ?? '',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: readingService.currentBook!.currentPage /
-                        readingService.currentBook!.totalPages,
-                    backgroundColor: Colors.grey[200],
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Color(0xFFE091A0)),
-                    minHeight: 8,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
@@ -288,7 +207,6 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.all(16),
@@ -312,6 +230,7 @@ class HomeScreen extends StatelessWidget {
   Widget _buildBookCard(BuildContext context, Book book) {
     return GestureDetector(
       onTap: () {
+        // Navigate to Book Details Screen
         Navigator.push(
           context,
           MaterialPageRoute(
