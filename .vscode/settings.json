@@ -19,5 +19,6 @@
         "sqflite",
         "xcconfig",
         "xcuserdata"
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
 }

@@ -1,13 +1,13 @@
 // Reading statistics model
 
 class ReadingStats {
-  final int totalPagesRead;
-  final int currentStreak;
-  final int totalReadingDays;
-  final int dailyGoal;
-  final int dailyProgress;
-  final List<String> unlockedAchievements;
-  final DateTime lastReadDate;
+  int totalPagesRead;
+  int currentStreak;
+  int totalReadingDays;
+  int dailyGoal;
+  int dailyProgress;
+  List<String> unlockedAchievements;
+  DateTime lastReadDate;
 
   ReadingStats({
     required this.totalPagesRead,
@@ -50,8 +50,10 @@ class ReadingStats {
       totalReadingDays: map['totalReadingDays'] ?? 0,
       dailyGoal: map['dailyGoal'] ?? 30,
       dailyProgress: map['dailyProgress'] ?? 0,
-      unlockedAchievements: List<String>.from(map['unlockedAchievements'] ?? []),
-      lastReadDate: DateTime.parse(map['lastReadDate'] ?? DateTime.now().toIso8601String()),
+      unlockedAchievements:
+          List<String>.from(map['unlockedAchievements'] ?? []),
+      lastReadDate: DateTime.parse(
+          map['lastReadDate'] ?? DateTime.now().toIso8601String()),
     );
   }
 

@@ -23,7 +23,7 @@ class ReadingService extends ChangeNotifier {
   double _readingSpeedAverage = 0.0;
   double _fontSize = 16.0; // Default font size
 
-  final ReadingStats _stats = ReadingStats(
+  ReadingStats _stats = ReadingStats(
     dailyProgress: 0,
     dailyGoal: 10,
     currentStreak: 0,
@@ -183,10 +183,11 @@ class ReadingService extends ChangeNotifier {
 
   void updateDailyProgress(int pages) {
     _dailyProgress += pages;
-    _stats.dailyProgress += pages;
-    if (_stats.dailyProgress >= _stats.dailyGoal) {
-      _stats.currentStreak++;
-    }
+    _stats = _stats.copyWith(
+        dailyProgress: _stats.dailyProgress + pages,
+        currentStreak: _stats.dailyProgress + pages >= _stats.dailyGoal
+            ? _stats.currentStreak + 1
+            : _stats.currentStreak);
     notifyListeners();
   }
 

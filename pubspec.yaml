@@ -72,6 +72,7 @@ flutter:
   assets:
     - assets/splash/
     - assets/images/
+    - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -85,12 +86,12 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Noto Sans JP
+    - family: Noto Sans
       fonts:
-        - asset: assets/fonts/NotoSansJP-Regular.otf
-        - asset: assets/fonts/NotoSansJP-Medium.otf
+        - asset: assets/fonts/NotoSans_Condensed-Regular.ttf
+        - asset: assets/fonts/NotoSans_Condensed-Medium.ttf
           weight: 500
-        - asset: assets/fonts/NotoSansJP-Bold.otf
+        - asset: assets/fonts/NotoSans_Condensed-Bold.ttf
           weight: 700
   #
   # For details regarding fonts from package dependencies,
