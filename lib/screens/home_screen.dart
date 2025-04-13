@@ -2,55 +2,47 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../models/book.dart';
 import '../services/reading_service.dart';
 import 'book_details_screen.dart';
 import 'search_screen.dart';
+import '../widgets/book_card.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   Future<void> _handleAddBook(BuildContext context) async {
+    print("HomeScreen: _handleAddBook called");
     try {
-      // Show loading dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-
-      // Open file picker for PDF/EPUB files
+      print("HomeScreen: Trying to open file picker");
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'epub'],
       );
+
+      print("HomeScreen: File picker result: $result");
 
       if (result != null) {
         final file = File(result.files.single.path!);
         final readingService =
             Provider.of<ReadingService>(context, listen: false);
 
-        // Create initial book object
         final newBook = Book(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           title: path.basenameWithoutExtension(file.path),
           filePath: file.path,
-          totalPages: 0,
+          totalPages: 100,
+          currentPage: 0,
           readingTime: Duration.zero.inMilliseconds,
           readingSpeed: 0.0,
+          // coverImage: 'assets/images/default_book_cover.png',
+          // author: 'Unknown',
+          // progressPercentage: 0.0,
         );
 
-        // Add and process book
         await readingService.addBook(newBook);
-
-        // Close loading dialog
-        Navigator.pop(context);
-
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Book added successfully!'),
@@ -58,13 +50,10 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       } else {
-        Navigator.pop(context); // Close loading dialog
+        print("HomeScreen: User cancelled file picking");
       }
     } catch (e) {
-      // Close loading dialog
-      Navigator.pop(context);
-
-      // Show error message
+      print("HomeScreen: Error picking file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error adding book: ${e.toString()}'),
@@ -79,232 +68,352 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  void _openBookDetails(BuildContext context, Book book) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookDetailsScreen(book: book),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Color(0xFFDA6D8F);
+    const shelfColor = Color(0xFFC49A6C);
+    const lightPink = Color(0xFFF4A0BA);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Light beige background
+      backgroundColor: const Color(0xFFF3EFEA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          'Hello, Reader!',
-          style: TextStyle(
-            color: Color(0xFFE091A0), // Pink color
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 18.0),
+          child: Text(
+            'Hello, Reader!',
+            style: GoogleFonts.fredoka(
+              color: primaryColor,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: const Offset(1.0, 1.0),
+                  blurRadius: 3.0,
+                  color: Colors.black.withOpacity(0.2),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Color(0xFFE091A0)),
-            onPressed: () {
-              // Navigate to Search Screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchScreen()),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0),
+            child: IconButton(
+              icon: Icon(Icons.search, color: primaryColor),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchScreen()),
+                );
+              },
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Color(0xFFE091A0)),
-            onPressed: () {
-              // Handle filter (can be implemented later)
-            },
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0, right: 8.0),
+            child: IconButton(
+              icon: Icon(Icons.turned_in_not, color: primaryColor),
+              onPressed: () {
+                // Handle filter
+              },
+            ),
           ),
         ],
       ),
       body: Consumer<ReadingService>(
         builder: (context, readingService, child) {
           final hasBooks = readingService.recentBooks.isNotEmpty;
+          final placeholderBooks = _generatePlaceholderBooks();
+          final booksToShow = hasBooks ? readingService.recentBooks : placeholderBooks;
 
-          return Column(
-            children: [
-              if (hasBooks && readingService.currentBook != null)
-                _buildSpotlightBook(readingService.currentBook!),
-              Expanded(
-                child: hasBooks
-                    ? _buildBooksView(context, readingService)
-                    : _buildEmptyState(context),
-              ),
-              _buildBottomNavigationBar(),
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 40.0, bottom: 10.0),
+                  child: Column(
+                    children: [
+                      Material(
+                        elevation: 10,
+                        borderRadius: BorderRadius.circular(70),
+                        child: _buildAddBookButton(context, primaryColor, size: 120),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Let's add your first book!",
+                        style: GoogleFonts.fredoka(
+                          color: lightPink,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'My books',
+                        style: GoogleFonts.fredoka(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: primaryColor,
+                        ),
+                      ),
+                      Text(
+                        'Edit Shelf',
+                        style: GoogleFonts.fredoka (
+                          color: primaryColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _buildBookShelf(context, booksToShow, shelfColor),
+                const SizedBox(height: 20),
+              ],
+            ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFE091A0),
-        child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () => _handleAddBook(context),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: _buildBottomNavigationBar(primaryColor),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 60),
-        GestureDetector(
-          onTap: () => _handleAddBook(context),
-          child: Container(
-            width: 120,
-            height: 120,
+  Widget _buildAddBookButton(BuildContext context, Color primaryColor, {double size = 140}) {
+    return GestureDetector(
+      onTap: () => _handleAddBook(context),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: primaryColor,
+          border: Border.all(
+            color: Colors.white,
+            width: 4.0,
+          ),
+        ),
+        child: Icon(
+          Icons.add,
+          size: size * 0.5,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  List<Book> _generatePlaceholderBooks() {
+    return List.generate(9, (index) {
+      final isEven = index % 2 == 0;
+      return Book(
+        id: 'placeholder_$index',
+        title: 'Placeholder',
+        filePath: '',
+        totalPages: 1,
+        currentPage: 0,
+        readingTime: 0,
+        readingSpeed: 0,
+        // coverImage: isEven ? 'assets/images/logo-beige.png' : 'assets/images/logo-pink.png',
+        // author: '',
+        // progressPercentage: 0,
+      );
+    });
+  }
+
+  Widget _buildBookShelf(BuildContext context, List<Book> books, Color shelfColor) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 0),
+      child: Column(
+        children: [
+          Container(
+            height: 30.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: BoxDecoration(
-              color: const Color(0xFFE091A0),
-              shape: BoxShape.circle,
+              color: shelfColor,
+              borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+                  color: Colors.black.withOpacity(0.3),
+                  spreadRadius: 0,
+                  blurRadius: 6,
+                  offset: const Offset(0, 6),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 1,
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.add,
-              size: 50,
-              color: Colors.white,
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: books.take(3).toList().asMap().entries.map((entry) {
+                int index = entry.key;
+                Book book = entry.value;
+                return SizedBox(
+                  width: (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
+                  height: 200,
+                  child: BookCard(
+                    book: book,
+                    onTap: () => _openBookDetails(context, book),
+                    isGrid: true,
+                    indexInRow: index,
+                  ),
+                );
+              }).toList(),
             ),
           ),
-        ),
-        const SizedBox(height: 40),
-        const Text(
-          'My books',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-      ],
+          if (books.length > 3) const SizedBox(height: 20),
+          if (books.length > 3) _buildShelfRow(context, books.skip(3).take(3).toList(), shelfColor),
+          if (books.length > 6) const SizedBox(height: 20),
+          if (books.length > 6) _buildShelfRow(context, books.skip(6).take(3).toList(), shelfColor),
+        ],
+      ),
     );
   }
 
-  Widget _buildBooksView(BuildContext context, ReadingService readingService) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'My books',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+  Widget _buildShelfRow(BuildContext context, List<Book> shelfBooks, Color shelfColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            height: 30.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: shelfColor,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  spreadRadius: 0,
+                  blurRadius: 6,
+                  offset: const Offset(0, 6),
                 ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 1,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: shelfBooks.asMap().entries.map((entry) {
+                int index = entry.key;
+                Book book = entry.value;
+                return SizedBox(
+                  width: (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
+                  height: 200,
+                  child: BookCard(
+                    book: book,
+                    onTap: () => _openBookDetails(context, book),
+                    isGrid: true,
+                    indexInRow: index,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(Color primaryColor) {
+    return Transform.translate(
+      offset: const Offset(0, -20),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          border: Border.all(
+            color: Colors.black,
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.4),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            selectedItemColor: primaryColor,
+            unselectedItemColor: Colors.grey,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.book),
+                label: 'Read',
               ),
-              Text(
-                'Edit Shelf',
-                style: TextStyle(
-                  color: Color(0xFFE091A0),
-                  fontSize: 16,
-                ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bookmark),
+                label: 'Bookmarks',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Settings',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
               ),
             ],
           ),
         ),
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: readingService.recentBooks.length,
-            itemBuilder: (context, index) {
-              final book = readingService.recentBooks[index];
-              return _buildBookCard(context, book);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBookCard(BuildContext context, Book book) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to Book Details Screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookDetailsScreen(book: book),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          image: book.coverPath != null
-              ? DecorationImage(
-                  image: FileImage(File(book.coverPath!)),
-                  fit: BoxFit.cover,
-                )
-              : null,
-          color: const Color(0xFFE091A0).withOpacity(0.3),
-        ),
       ),
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: const Color(0xFFE091A0),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Read',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Bookmarks',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSpotlightBook(Book book) {
+  Widget _buildSpotlightBook(Book book, Color primaryColor) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Container(
-            width: 120,
-            height: 120,
+            width: 110,
+            height: 110,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFE091A0),
+              color: primaryColor,
+              border: Border.all(
+                color: Colors.white,
+                width: 4.0,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.pink.withOpacity(0.3),
@@ -313,22 +422,21 @@ class HomeScreen extends StatelessWidget {
                   offset: const Offset(0, 3),
                 ),
               ],
-              image: book.coverPath != null
-                  ? DecorationImage(
-                      image: FileImage(File(book.coverPath!)),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+              // image: book.coverImage != null && book.coverImage!.isNotEmpty
+              //     ? AssetImage(book.coverImage!) as ImageProvider
+              //     : null,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             book.title,
-            style: const TextStyle(
+            style: GoogleFonts.fredoka(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           if (book.author != null)
             Text(
@@ -342,10 +450,9 @@ class HomeScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: book.currentPage / book.totalPages,
+              value: book.progressPercentage / 100,
               backgroundColor: Colors.grey[200],
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(Color(0xFFE091A0)),
+              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
               minHeight: 8,
             ),
           ),
