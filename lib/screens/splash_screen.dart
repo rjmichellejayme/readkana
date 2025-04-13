@@ -1,3 +1,4 @@
+import 'dart:async'; // For Timer
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,39 +12,29 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToSignUp();
+    _startDelayTimer();
   }
 
-  Future<void> _navigateToSignUp() async {
-    await Future.delayed(const Duration(seconds: 3)); // Wait for 3 seconds
-    if (mounted) {
-      Navigator.pushReplacementNamed(
-          context, '/signup'); // Navigate to SignUpScreen
-    }
+  void _startDelayTimer() {
+    Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+            context, '/signup'); // Navigate to SignUpScreen
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Light background color
+      backgroundColor:
+          const Color(0xFFF4A0BA), // Set background color to #f4a0ba
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text(
-              'Welcome to ReadKana',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  Color(0xFFE091A0)), // Pink color
-            ),
-          ],
+        child: Image.asset(
+          'assets/images/loader.gif',
+          fit: BoxFit.contain,
+          width: 300, // Set a smaller width for the logo
+          height: 300, // Set a smaller height for the logo
         ),
       ),
     );
