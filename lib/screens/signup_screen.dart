@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
 import 'package:readkana/routes/app_router.dart';
+import 'package:readkana/services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,6 +14,14 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _agreedToTerms = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthService>(context, listen: false).checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,10 +165,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate() && _agreedToTerms) {
-                          // Add signup logic here
-                          Navigator.pushReplacementNamed(context, AppRouter.home);
+                          await Provider.of<AuthService>(context, listen: false).signup();
+                          if (mounted) {
+                            Navigator.pushReplacementNamed(context, AppRouter.home);
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -179,8 +191,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, AppRouter.home);
+                      onPressed: () async {
+                        await Provider.of<AuthService>(context, listen: false).signup();
+                        if (mounted) {
+                          Navigator.pushReplacementNamed(context, AppRouter.home);
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),

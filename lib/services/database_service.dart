@@ -99,6 +99,13 @@ class DatabaseService {
     );
   }
 
+  Future<Book> addBook(Book book) async {
+    // Simulate adding the book to a database
+    // Replace this with actual database logic
+    await Future.delayed(const Duration(milliseconds: 500));
+    return book; // Return the book after adding it
+  }
+
   // Bookmark operations
   Future<void> insertBookmark(Bookmark bookmark) async {
     final db = await database;

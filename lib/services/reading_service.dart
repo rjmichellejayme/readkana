@@ -243,8 +243,9 @@ class ReadingService extends ChangeNotifier {
   Future<void> addBook(Book book) async {
     try {
       // Process the book file
-      final processedData = await BookProcessorService.processBook(book.filePath);
-      
+      final processedData =
+          await BookProcessorService.processBook(book.filePath);
+
       // Update book with processed data
       final updatedBook = book.copyWith(
         title: processedData['title'],
@@ -252,21 +253,19 @@ class ReadingService extends ChangeNotifier {
         totalPages: processedData['totalPages'],
         coverPath: processedData['coverPath'],
         description: processedData['description'],
-        fileType: processedData['fileType'],
-        fileSize: processedData['fileSize'],
       );
-      
+
       // Add to database
       final addedBook = await _databaseService.addBook(updatedBook);
-      
+
       // Add to recent books
       _recentBooks.insert(0, addedBook);
-      
+
       // Update current book if needed
       if (_currentBook == null) {
         _currentBook = addedBook;
       }
-      
+
       notifyListeners();
     } catch (e) {
       throw BookProcessingException('Failed to add book: $e');

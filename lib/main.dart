@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'app.dart';
+import 'services/auth_service.dart';
 
 void main() async {
   // Keep splash screen up while initializing
@@ -22,7 +24,7 @@ void main() async {
 Future<void> _initializeServices() async {
   try {
     // Initialize SharedPreferences
-    await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
 
     // Set preferred orientations
     await SystemChrome.setPreferredOrientations([

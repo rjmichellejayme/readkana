@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
 import 'package:readkana/routes/app_router.dart';
+import 'package:readkana/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +14,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthService>(context, listen: false).checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,10 +141,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          // Add login logic here
-                          Navigator.pushReplacementNamed(context, AppRouter.home);
+                          await Provider.of<AuthService>(context, listen: false).login();
+                          if (mounted) {
+                            Navigator.pushReplacementNamed(context, AppRouter.home);
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

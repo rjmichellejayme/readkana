@@ -15,6 +15,8 @@ class Book {
   final List<String> tags;
   final bool isFavorite;
   final String format;
+  final String? fileType; // Add this field
+  final int? fileSize; // Add this field
 
   String? get coverImage => coverPath;
   final int totalPagesRead; // Add this field
@@ -34,6 +36,8 @@ class Book {
     this.isFavorite = false,
     this.format = 'epub',
     this.totalPagesRead = 0,
+    this.fileType, // Add this field
+    this.fileSize, // Add this field
   });
 
   factory Book.initial() {
@@ -120,6 +124,8 @@ class Book {
       tags: tags ?? this.tags,
       isFavorite: isFavorite ?? this.isFavorite,
       format: format ?? this.format,
+      fileType: fileType ?? this.fileType, // Add this field
+      fileSize: fileSize ?? this.fileSize,
     );
   }
 

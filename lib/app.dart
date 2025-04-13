@@ -7,6 +7,7 @@ import 'services/reading_service.dart';
 import 'services/achievement_service.dart';
 import 'services/search_service.dart';
 import 'services/database_service.dart';
+import 'services/auth_service.dart';
 import 'routes/app_router.dart';
 
 class App extends StatelessWidget {
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ReadingService()),
         ChangeNotifierProvider(create: (_) => AchievementService()),
         ChangeNotifierProvider(create: (_) => SearchService()),
+        ChangeNotifierProvider(create: (_) => AuthService()),
         Provider(create: (_) => DatabaseService()),
       ],
       child: Consumer<ThemeService>(
@@ -30,7 +32,7 @@ class App extends StatelessWidget {
             title: 'ReadKana',
             theme: themeService.themeData,
             onGenerateRoute: AppRouter.generateRoute,
-            initialRoute: AppRouter.login,
+            initialRoute: AppRouter.initial,
             debugShowCheckedModeBanner: false,
           );
         },

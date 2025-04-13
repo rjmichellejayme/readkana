@@ -4,6 +4,7 @@ import 'package:pdfx/pdfx.dart';
 import 'package:epubx/epubx.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
 
 class BookProcessorService {
   static Future<Map<String, dynamic>> processBook(String filePath) async {
@@ -94,14 +95,13 @@ class BookProcessorService {
   static Future<File?> _extractEPUBCover(EpubBook book) async {
     try {
       if (book.CoverImage != null) {
-        final ui.Image image = book.CoverImage!;
-        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-        if (byteData != null) {
-          final tempDir = await getTemporaryDirectory();
-          final coverFile = File('${tempDir.path}/temp_cover.png');
-          await coverFile.writeAsBytes(byteData.buffer.asUint8List());
-          return coverFile;
-        }
+        final img.Image image =
+            book.CoverImage!; // Use image.Image from the image package
+        final tempDir = await getTemporaryDirectory();
+        final coverFile = File('${tempDir.path}/temp_cover.jpg');
+        await coverFile
+            .writeAsBytes(img.encodeJpg(image)); // Encode the image as JPG
+        return coverFile;
       }
     } catch (e) {
       print('Error extracting EPUB cover: $e');
