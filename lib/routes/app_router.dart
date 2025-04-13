@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import 'route_guards.dart';
+import '../screens/home_screen.dart';
 
 class AppRouter {
   // Route names as static constants
@@ -18,7 +19,7 @@ class AppRouter {
           builder: (_) => const LoginScreen(),
           settings: settings,
         );
-      
+
       case signup:
         return MaterialPageRoute(
           builder: (_) => const SignUpScreen(),
@@ -45,5 +46,6 @@ class AppRouter {
   }
 
   // Add a navigator key for accessing context anywhere
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 }

@@ -11,39 +11,48 @@ import 'migrations/migration_2.dart';
 import 'migrations/migration_3.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._init();
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
 
-  DatabaseHelper._init();
+  factory DatabaseHelper() => _instance;
+
+  DatabaseHelper._internal();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('readkana.db');
+    _database = await _initDatabase();
     return _database!;
   }
 
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
-
+  Future<Database> _initDatabase() async {
+    String path = join(await getDatabasesPath(), 'readkana.db');
     return await openDatabase(
       path,
-      version: 3,
-      onCreate: _createDB,
-      onUpgrade: _upgradeDB,
+      version: 1,
+      onCreate: _onCreate,
     );
   }
 
-  Future<void> _createDB(Database db, int version) async {
-    await Migration1().upgrade(db);
-    await Migration2().upgrade(db);
-    await Migration3().upgrade(db);
-  }
-
-  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 1) await Migration1().upgrade(db);
-    if (oldVersion < 2) await Migration2().upgrade(db);
-    if (oldVersion < 3) await Migration3().upgrade(db);
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE books(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        author TEXT,
+        filePath TEXT NOT NULL,
+        coverPath TEXT,
+        currentPage INTEGER DEFAULT 0,
+        totalPages INTEGER DEFAULT 0,
+        fileType TEXT NOT NULL,
+        dateAdded TEXT NOT NULL,
+        lastRead TEXT,
+        readingProgress REAL DEFAULT 0.0,
+        description TEXT,
+        isbn TEXT,
+        language TEXT,
+        fileSize INTEGER
+      )
+    ''');
   }
 
   // Book operations
@@ -225,7 +234,7 @@ class DatabaseHelper {
   }
 
   Future<void> close() async {
-    final db = await instance.database;
+    final db = await _instance.database;
     db.close();
   }
 }

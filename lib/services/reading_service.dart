@@ -5,6 +5,7 @@ import '../models/reading_stats.dart';
 import '../utils/preferences_utils.dart';
 import '../utils/date_utils.dart' as custom_date_utils;
 import 'database_service.dart';
+import 'book_processor_service.dart';
 
 class ReadingService extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -237,5 +238,38 @@ class ReadingService extends ChangeNotifier {
     await prefs.setInt('longest_streak', _longestStreak);
     await prefs.setInt('total_reading_days', _totalReadingDays);
     await prefs.setInt('books_read', _booksRead);
+  }
+
+  Future<void> addBook(Book book) async {
+    try {
+      // Process the book file
+      final processedData = await BookProcessorService.processBook(book.filePath);
+      
+      // Update book with processed data
+      final updatedBook = book.copyWith(
+        title: processedData['title'],
+        author: processedData['author'],
+        totalPages: processedData['totalPages'],
+        coverPath: processedData['coverPath'],
+        description: processedData['description'],
+        fileType: processedData['fileType'],
+        fileSize: processedData['fileSize'],
+      );
+      
+      // Add to database
+      final addedBook = await _databaseService.addBook(updatedBook);
+      
+      // Add to recent books
+      _recentBooks.insert(0, addedBook);
+      
+      // Update current book if needed
+      if (_currentBook == null) {
+        _currentBook = addedBook;
+      }
+      
+      notifyListeners();
+    } catch (e) {
+      throw BookProcessingException('Failed to add book: $e');
+    }
   }
 }
