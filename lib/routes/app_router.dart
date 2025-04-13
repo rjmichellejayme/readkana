@@ -22,7 +22,7 @@ class AppRouter {
 
       case signup:
         return MaterialPageRoute(
-          builder: (_) => const SignUpScreen(),
+          builder: (_) => const SignupScreen(),
           settings: settings,
         );
 
