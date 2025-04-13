@@ -79,6 +79,8 @@ flutter:
   assets:
     - assets/splash/
     - assets/images/
+    - assets/images/logo-pink.jpg
+    - assets/images/logo-beige.jpg
     - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -100,6 +102,6 @@ flutter:
           weight: 500
         - asset: assets/fonts/NotoSans_Condensed-Bold.ttf
           weight: 700
-  #
+  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
