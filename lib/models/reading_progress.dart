@@ -51,7 +51,8 @@ class ReadingProgress {
       bookId: map['bookId'] ?? '',
       currentPage: map['currentPage'] ?? 0,
       totalPages: map['totalPages'] ?? 0,
-      lastRead: DateTime.parse(map['lastRead'] ?? DateTime.now().toIso8601String()),
+      lastRead:
+          DateTime.parse(map['lastRead'] ?? DateTime.now().toIso8601String()),
       readingTime: Duration(seconds: map['readingTime'] ?? 0),
       pagesReadToday: map['pagesReadToday'] ?? 0,
       isCompleted: map['isCompleted'] ?? false,

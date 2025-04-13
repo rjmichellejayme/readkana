@@ -79,6 +79,8 @@ flutter:
   assets:
     - assets/splash/
     - assets/images/
+    - assets/images/get_started.png
+    - assets/images/welcome_back.png
     - assets/images/logo-pink.jpg
     - assets/images/logo-beige.jpg
     - assets/fonts/
