@@ -7,6 +7,7 @@ import 'services/reading_service.dart';
 import 'services/achievement_service.dart';
 import 'services/search_service.dart';
 import 'services/database_service.dart';
+import 'routes/app_router.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,9 +26,11 @@ class App extends StatelessWidget {
       child: Consumer<ThemeService>(
         builder: (context, themeService, child) {
           return MaterialApp(
+            navigatorKey: AppRouter.navigatorKey,
             title: 'ReadKana',
             theme: themeService.themeData,
-            home: const HomeScreen(),
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: AppRouter.login,
             debugShowCheckedModeBanner: false,
           );
         },
