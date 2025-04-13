@@ -246,12 +246,11 @@ class ReadingService extends ChangeNotifier {
       final processedData =
           await BookProcessorService.processBook(book.filePath);
 
-      // Update book with processed data
+      // Update book with processed data (excluding coverPath)
       final updatedBook = book.copyWith(
         title: processedData['title'],
         author: processedData['author'],
         totalPages: processedData['totalPages'],
-        coverPath: processedData['coverPath'],
         description: processedData['description'],
       );
 
