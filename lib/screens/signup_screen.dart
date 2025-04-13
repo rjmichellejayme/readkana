@@ -29,11 +29,11 @@ class _SignupScreenState extends State<SignupScreen> {
       backgroundColor: const Color(0xFFF5F2F0),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
+        child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
                 const SizedBox(height: 50),
                 // Get Started image and text
                 Center(
@@ -176,33 +176,33 @@ class _SignupScreenState extends State<SignupScreen> {
                         size: 18,
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 16),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                 // Continue as Guest button
-                OutlinedButton(
+                    OutlinedButton(
                   onPressed: _handleContinueAsGuest,
-                  style: OutlinedButton.styleFrom(
+                      style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black87,
                     side: const BorderSide(color: Colors.black26),
-                    shape: RoundedRectangleBorder(
+                        shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
-                    ),
+                        ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    'Continue as Guest',
-                    style: TextStyle(
-                      fontSize: 16,
+                      ),
+                      child: const Text(
+                        'Continue as Guest',
+                        style: TextStyle(
+                          fontSize: 16,
                       fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                    const SizedBox(height: 24),
                 // Already a member text
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                        children: [
                     const Text(
                       'Already a member? ',
                       style: TextStyle(
