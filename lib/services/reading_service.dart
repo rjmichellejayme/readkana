@@ -6,6 +6,7 @@ import '../utils/preferences_utils.dart';
 import '../utils/date_utils.dart' as custom_date_utils;
 import 'database_service.dart';
 import 'book_processor_service.dart';
+import 'dart:io';
 
 class ReadingService extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
@@ -36,6 +37,8 @@ class ReadingService extends ChangeNotifier {
 
   int _dailyProgress = 0; // Tracks the number of pages read today
   int _dailyGoal = 30; // Default daily goal
+
+  List<Book> _books = []; // Add a private list to store books
 
   Book? get currentBook => _currentBook;
   int get currentPage => _currentPage;
@@ -268,6 +271,76 @@ class ReadingService extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       throw BookProcessingException('Failed to add book: $e');
+    }
+  }
+
+  Future<void> loadBooksFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bookIds = prefs.getStringList('book_ids') ?? [];
+
+    _books = [];
+    for (String id in bookIds) {
+      final title = prefs.getString('book_title_$id') ?? '';
+      final path = prefs.getString('book_path_$id') ?? '';
+
+      _books.add(Book(
+        id: id,
+        title: title,
+        filePath: path,
+        totalPages: 100,
+        currentPage: 0,
+        readingTime: 0,
+        readingSpeed: 0.0,
+      ));
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteBook(String bookId) async {
+    try {
+      // Get the book to delete
+      final bookToDelete = _books.firstWhere((book) => book.id == bookId);
+
+      // Remove the book from the list
+      _books.removeWhere((book) => book.id == bookId);
+
+      // Delete the file if it exists
+      if (bookToDelete.filePath.isNotEmpty) {
+        final file = File(bookToDelete.filePath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+
+      // Remove from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+
+      // Remove book details
+      await prefs.remove('book_title_$bookId');
+      await prefs.remove('book_path_$bookId');
+      await prefs.remove('book_currentPage_$bookId');
+      await prefs.remove('book_readingTime_$bookId');
+
+      // Update book IDs list
+      List<String> bookIds = prefs.getStringList('book_ids') ?? [];
+      bookIds.remove(bookId);
+      await prefs.setStringList('book_ids', bookIds);
+
+      // Also remove from recent books if present
+      _recentBooks.removeWhere((book) => book.id == bookId);
+
+      // If this was the current book, clear it
+      if (_currentBook?.id == bookId) {
+        _currentBook = null;
+        _currentPage = 0;
+        _lastReadingSession = null;
+      }
+
+      // Notify listeners to update UI
+      notifyListeners();
+    } catch (e) {
+      print("Error deleting book: $e");
+      throw Exception('Failed to delete book: $e');
     }
   }
 }

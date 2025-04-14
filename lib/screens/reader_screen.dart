@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 import '../services/reading_service.dart';
 import '../services/sound_service.dart';
+import '../services/theme_service.dart';
 
 class ReaderScreen extends StatefulWidget {
   final Book book;
@@ -22,7 +23,7 @@ class _ReaderScreenState extends State<ReaderScreen>
   final PageController _pageController = PageController();
   bool _isFullScreen = false;
   double _fontSize = 16.0;
-  Color _backgroundColor = Colors.white;
+  Color _backgroundColor = const Color(0xFFF3EFEA); // Default color
   Color _textColor = Colors.black;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -48,6 +49,15 @@ class _ReaderScreenState extends State<ReaderScreen>
     // Initialize with the book's current page
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pageController.jumpToPage(widget.book.currentPage);
+    });
+
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final backgroundColor = await ThemeService.getReaderBackgroundColor();
+    setState(() {
+      _backgroundColor = backgroundColor;
     });
   }
 

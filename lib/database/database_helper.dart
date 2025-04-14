@@ -6,9 +6,6 @@ import '../models/annotation.dart';
 import '../models/reading_progress.dart';
 import '../models/achievement.dart';
 import '../models/user_preferences.dart';
-import 'migrations/migration_1.dart';
-import 'migrations/migration_2.dart';
-import 'migrations/migration_3.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();

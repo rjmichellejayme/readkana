@@ -46,6 +46,7 @@ dependencies:
   epub_view: ^3.2.0
   pdfx: ^2.0.2 # For handling PDF files
   epubx: ^4.0.0 # For handling EPUB files
+  fl_chart: ^0.66.2
 
 # The following adds the Cupertino Icons font to your application.
 # Use with the CupertinoIcons class for iOS style icons.
@@ -84,6 +85,10 @@ flutter:
     - assets/images/logo-pink.jpg
     - assets/images/logo-beige.jpg
     - assets/fonts/
+    - assets/sounds/rain.mp3
+    - assets/sounds/forest.mp3
+    - assets/sounds/ocean.mp3
+    - assets/sounds/cafe.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

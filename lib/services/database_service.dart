@@ -2,7 +2,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/book.dart';
 import '../models/bookmark.dart';
-import '../models/highlight.dart';
 import '../models/quote.dart';
 import '../models/note.dart';
 
@@ -128,31 +127,6 @@ class DatabaseService {
       'bookmarks',
       where: 'id = ?',
       whereArgs: [bookmarkId],
-    );
-  }
-
-  // Highlight operations
-  Future<void> insertHighlight(Highlight highlight) async {
-    final db = await database;
-    await db.insert('highlights', highlight.toMap());
-  }
-
-  Future<List<Highlight>> getHighlights(String bookId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'highlights',
-      where: 'bookId = ?',
-      whereArgs: [bookId],
-    );
-    return List.generate(maps.length, (i) => Highlight.fromMap(maps[i]));
-  }
-
-  Future<void> deleteHighlight(String highlightId) async {
-    final db = await database;
-    await db.delete(
-      'highlights',
-      where: 'id = ?',
-      whereArgs: [highlightId],
     );
   }
 
