@@ -3,66 +3,138 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/book.dart';
 import '../services/reading_service.dart';
 import 'book_details_screen.dart';
 import 'search_screen.dart';
 import '../widgets/book_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'bookmarks_screen.dart';
+import 'settings_screen.dart';
+import 'profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<ReadingService>(context, listen: false).loadBooksFromPrefs();
+    });
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      // Already on home/read screen
+      setState(() {
+        _selectedIndex = 0;
+      });
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
+  }
+
   Future<void> _handleAddBook(BuildContext context) async {
-    print("HomeScreen: _handleAddBook called");
     try {
-      print("HomeScreen: Trying to open file picker");
+      // Pick the file with bytes data
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'epub'],
+        allowedExtensions: ['epub'],
+        allowMultiple: false,
+        withData: true, // Important: This ensures we get the bytes
       );
 
-      print("HomeScreen: File picker result: $result");
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        final bytes = file.bytes;
 
-      if (result != null) {
-        final file = File(result.files.single.path!);
-        final readingService =
-            Provider.of<ReadingService>(context, listen: false);
+        if (bytes == null) {
+          throw Exception('Could not read file data');
+        }
 
+        // Create a unique filename using timestamp
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final extension = '.epub';
+        final newFileName = 'book_$timestamp$extension';
+
+        // Get the application support directory
+        final appDir = await getApplicationSupportDirectory();
+        final bookDir = Directory('${appDir.path}/books');
+
+        // Create books directory if it doesn't exist
+        if (!await bookDir.exists()) {
+          await bookDir.create(recursive: true);
+        }
+
+        // Save the file using bytes
+        final savedFile = File('${bookDir.path}/$newFileName');
+        await savedFile.writeAsBytes(bytes);
+
+        // Generate unique book ID
+        final bookId = timestamp.toString();
+
+        // Create new book
         final newBook = Book(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: path.basenameWithoutExtension(file.path),
-          filePath: file.path,
-          totalPages: 100,
+          id: bookId,
+          title: file.name,
+          filePath: savedFile.path,
+          totalPages: 100, // Default value
           currentPage: 0,
-          readingTime: Duration.zero.inMilliseconds,
-          readingSpeed: 0.0,
-          // coverImage: 'assets/images/default_book_cover.png',
-          // author: 'Unknown',
-          // progressPercentage: 0.0,
+          readingTime: 0,
+          readingSpeed: 0,
         );
 
+        // Save to ReadingService
+        final readingService =
+            Provider.of<ReadingService>(context, listen: false);
         await readingService.addBook(newBook);
+
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Book added successfully!'),
+          SnackBar(
+            content: Text(
+              'Book added successfully!',
+              style: GoogleFonts.fredoka(),
+            ),
             backgroundColor: Colors.green,
           ),
         );
-      } else {
-        print("HomeScreen: User cancelled file picking");
       }
     } catch (e) {
-      print("HomeScreen: Error picking file: $e");
+      print("Error adding book: $e");
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error adding book: ${e.toString()}'),
-          backgroundColor: Colors.red,
-          action: SnackBarAction(
-            label: 'Retry',
-            textColor: Colors.white,
-            onPressed: () => _handleAddBook(context),
+          content: Text(
+            'Error adding book: ${e.toString()}',
+            style: GoogleFonts.fredoka(),
           ),
+          backgroundColor: Colors.red,
         ),
       );
     }
@@ -77,6 +149,79 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void _showDeleteBookDialog(BuildContext context, Book book) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Delete Book',
+          style: GoogleFonts.fredoka(
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFFDA6D8F),
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${book.title}"?',
+          style: GoogleFonts.fredoka(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.fredoka(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteBook(book);
+            },
+            child: Text(
+              'Delete',
+              style: GoogleFonts.fredoka(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteBook(Book book) async {
+    try {
+      await Provider.of<ReadingService>(context, listen: false)
+          .deleteBook(book.id);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Book deleted successfully',
+            style: GoogleFonts.fredoka(),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error deleting book: ${e.toString()}',
+            style: GoogleFonts.fredoka(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFFDA6D8F);
@@ -88,6 +233,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        automaticallyImplyLeading: false, // This will remove the back button
         title: Padding(
           padding: const EdgeInsets.only(top: 18.0),
           child: Text(
@@ -119,22 +265,14 @@ class HomeScreen extends StatelessWidget {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 18.0, right: 8.0),
-            child: IconButton(
-              icon: Icon(Icons.turned_in_not, color: primaryColor),
-              onPressed: () {
-                // Handle filter
-              },
-            ),
-          ),
         ],
       ),
       body: Consumer<ReadingService>(
         builder: (context, readingService, child) {
           final hasBooks = readingService.recentBooks.isNotEmpty;
           final placeholderBooks = _generatePlaceholderBooks();
-          final booksToShow = hasBooks ? readingService.recentBooks : placeholderBooks;
+          final booksToShow =
+              hasBooks ? readingService.recentBooks : placeholderBooks;
 
           return SingleChildScrollView(
             child: Column(
@@ -146,7 +284,8 @@ class HomeScreen extends StatelessWidget {
                       Material(
                         elevation: 10,
                         borderRadius: BorderRadius.circular(70),
-                        child: _buildAddBookButton(context, primaryColor, size: 120),
+                        child: _buildAddBookButton(context, primaryColor,
+                            size: 120),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -161,7 +300,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -171,13 +311,6 @@ class HomeScreen extends StatelessWidget {
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
                           color: primaryColor,
-                        ),
-                      ),
-                      Text(
-                        'Edit Shelf',
-                        style: GoogleFonts.fredoka (
-                          color: primaryColor,
-                          fontSize: 16,
                         ),
                       ),
                     ],
@@ -194,7 +327,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddBookButton(BuildContext context, Color primaryColor, {double size = 140}) {
+  Widget _buildAddBookButton(BuildContext context, Color primaryColor,
+      {double size = 140}) {
     return GestureDetector(
       onTap: () => _handleAddBook(context),
       child: Container(
@@ -219,23 +353,20 @@ class HomeScreen extends StatelessWidget {
 
   List<Book> _generatePlaceholderBooks() {
     return List.generate(9, (index) {
-      final isEven = index % 2 == 0;
       return Book(
         id: 'placeholder_$index',
-        title: 'Placeholder',
+        title: 'Book Name',
         filePath: '',
         totalPages: 1,
         currentPage: 0,
         readingTime: 0,
         readingSpeed: 0,
-        // coverImage: isEven ? 'assets/images/logo-beige.png' : 'assets/images/logo-pink.png',
-        // author: '',
-        // progressPercentage: 0,
       );
     });
   }
 
-  Widget _buildBookShelf(BuildContext context, List<Book> books, Color shelfColor) {
+  Widget _buildBookShelf(
+      BuildContext context, List<Book> books, Color shelfColor) {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
       child: Column(
@@ -271,11 +402,15 @@ class HomeScreen extends StatelessWidget {
                 int index = entry.key;
                 Book book = entry.value;
                 return SizedBox(
-                  width: (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
+                  width:
+                      (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
                   height: 200,
                   child: BookCard(
                     book: book,
                     onTap: () => _openBookDetails(context, book),
+                    onLongPress: book.id.startsWith('placeholder_')
+                        ? null
+                        : (book) => _showDeleteBookDialog(context, book),
                     isGrid: true,
                     indexInRow: index,
                   ),
@@ -284,15 +419,18 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           if (books.length > 3) const SizedBox(height: 20),
-          if (books.length > 3) _buildShelfRow(context, books.skip(3).take(3).toList(), shelfColor),
+          if (books.length > 3)
+            _buildShelfRow(context, books.skip(3).take(3).toList(), shelfColor),
           if (books.length > 6) const SizedBox(height: 20),
-          if (books.length > 6) _buildShelfRow(context, books.skip(6).take(3).toList(), shelfColor),
+          if (books.length > 6)
+            _buildShelfRow(context, books.skip(6).take(3).toList(), shelfColor),
         ],
       ),
     );
   }
 
-  Widget _buildShelfRow(BuildContext context, List<Book> shelfBooks, Color shelfColor) {
+  Widget _buildShelfRow(
+      BuildContext context, List<Book> shelfBooks, Color shelfColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Column(
@@ -329,11 +467,15 @@ class HomeScreen extends StatelessWidget {
                 int index = entry.key;
                 Book book = entry.value;
                 return SizedBox(
-                  width: (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
+                  width:
+                      (MediaQuery.of(context).size.width - 32 - (2 * 12)) / 3,
                   height: 200,
                   child: BookCard(
                     book: book,
                     onTap: () => _openBookDetails(context, book),
+                    onLongPress: book.id.startsWith('placeholder_')
+                        ? null
+                        : (book) => _showDeleteBookDialog(context, book),
                     isGrid: true,
                     indexInRow: index,
                   ),
@@ -370,6 +512,8 @@ class HomeScreen extends StatelessWidget {
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
             elevation: 0,
