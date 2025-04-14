@@ -28,7 +28,7 @@ class Book {
     this.coverPath,
     required this.filePath,
     required this.totalPages,
-    this.currentPage = 0,
+    required this.currentPage,
     this.lastReadDate, // Initialize this field
     required this.readingTime,
     required this.readingSpeed,
@@ -46,6 +46,7 @@ class Book {
       title: '',
       filePath: '',
       totalPages: 0,
+      currentPage: 0,
       readingTime: 0,
       readingSpeed: 0.0,
     );

@@ -73,7 +73,7 @@ class BackgroundSoundsScreen extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             title: Text(
-              _getSoundName(sound),
+              sound.displayName,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             trailing: isSelected
@@ -95,22 +95,5 @@ class BackgroundSoundsScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _getSoundName(String sound) {
-    switch (sound) {
-      case 'rain':
-        return 'Rain';
-      case 'waves':
-        return 'Ocean Waves';
-      case 'forest':
-        return 'Forest';
-      case 'cafe':
-        return 'Café';
-      case 'white_noise':
-        return 'White Noise';
-      default:
-        return sound;
-    }
   }
 }
