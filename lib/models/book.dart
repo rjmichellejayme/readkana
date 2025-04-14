@@ -9,17 +9,18 @@ class Book {
   final String filePath;
   final int totalPages;
   final int currentPage;
-  final DateTime? lastReadDate; // Add this field
-  final int readingTime; // in minutes
-  final double readingSpeed; // pages per minute
+  final DateTime? lastReadDate;
+  final int readingTime;
+  final double readingSpeed;
   final List<String> tags;
   final bool isFavorite;
   final String format;
-  final String? fileType; // Add this field
-  final int? fileSize; // Add this field
+  final String? fileType;
+  final int? fileSize;
+  final int totalPagesRead;
 
   String? get coverImage => coverPath;
-  final int totalPagesRead; // Add this field
+
   Book({
     required this.id,
     required this.title,
@@ -29,15 +30,15 @@ class Book {
     required this.filePath,
     required this.totalPages,
     required this.currentPage,
-    this.lastReadDate, // Initialize this field
+    this.lastReadDate,
     required this.readingTime,
     required this.readingSpeed,
     this.tags = const [],
     this.isFavorite = false,
     this.format = 'epub',
-    this.totalPagesRead = 0,
-    this.fileType, // Add this field
-    this.fileSize, // Add this field
+    this.totalPagesRead = 3,
+    this.fileType,
+    this.fileSize,
   });
 
   factory Book.initial() {
@@ -45,7 +46,7 @@ class Book {
       id: '',
       title: '',
       filePath: '',
-      totalPages: 0,
+      totalPages: 3,
       currentPage: 0,
       readingTime: 0,
       readingSpeed: 0.0,
@@ -62,13 +63,15 @@ class Book {
       'filePath': filePath,
       'totalPages': totalPages,
       'currentPage': currentPage,
-      'lastReadDate': lastReadDate?.toIso8601String(), // Update field name
-      'readingTime': readingTime, // Add this field
-      'readingSpeed': readingSpeed, // Add this field
+      'lastReadDate': lastReadDate?.toIso8601String(),
+      'readingTime': readingTime,
+      'readingSpeed': readingSpeed,
       'tags': tags,
       'isFavorite': isFavorite,
       'format': format,
-      'totalPagesRead': totalPagesRead, // Add this field
+      'totalPagesRead': totalPagesRead,
+      'fileType': fileType,
+      'fileSize': fileSize,
     };
   }
 
@@ -82,15 +85,17 @@ class Book {
       filePath: map['filePath'] ?? '',
       totalPages: map['totalPages'] ?? 0,
       currentPage: map['currentPage'] ?? 0,
-      lastReadDate: map['lastReadDate'] != null // Update field name
+      lastReadDate: map['lastReadDate'] != null
           ? DateTime.parse(map['lastReadDate'])
           : null,
-      readingTime: map['readingTime'] ?? 0, // Add this field
-      readingSpeed: map['readingSpeed'] ?? 0.0, // Add this field
+      readingTime: map['readingTime'] ?? 0,
+      readingSpeed: map['readingSpeed'] ?? 0.0,
       tags: List<String>.from(map['tags'] ?? []),
       isFavorite: map['isFavorite'] ?? false,
       format: map['format'] ?? 'epub',
-      totalPagesRead: map['totalPagesRead'] ?? 0, // Add this field
+      totalPagesRead: map['totalPagesRead'] ?? 0,
+      fileType: map['fileType'],
+      fileSize: map['fileSize'],
     );
   }
 
@@ -103,12 +108,15 @@ class Book {
     String? filePath,
     int? totalPages,
     int? currentPage,
-    DateTime? lastReadDate, // Update field name
-    int? readingTime, // Add this field
-    double? readingSpeed, // Add this field
+    DateTime? lastReadDate,
+    int? readingTime,
+    double? readingSpeed,
     List<String>? tags,
     bool? isFavorite,
     String? format,
+    String? fileType,
+    int? fileSize,
+    int? totalPagesRead,
   }) {
     return Book(
       id: id ?? this.id,
@@ -119,19 +127,20 @@ class Book {
       filePath: filePath ?? this.filePath,
       totalPages: totalPages ?? this.totalPages,
       currentPage: currentPage ?? this.currentPage,
-      lastReadDate: lastReadDate ?? this.lastReadDate, // Update field name
-      readingTime: readingTime ?? this.readingTime, // Add this field
-      readingSpeed: readingSpeed ?? this.readingSpeed, // Add this field
+      lastReadDate: lastReadDate ?? this.lastReadDate,
+      readingTime: readingTime ?? this.readingTime,
+      readingSpeed: readingSpeed ?? this.readingSpeed,
       tags: tags ?? this.tags,
       isFavorite: isFavorite ?? this.isFavorite,
       format: format ?? this.format,
-      fileType: fileType ?? this.fileType, // Add this field
+      fileType: fileType ?? this.fileType,
       fileSize: fileSize ?? this.fileSize,
+      totalPagesRead: totalPagesRead ?? this.totalPagesRead,
     );
   }
 
   double get progressPercentage {
-    if (totalPages == 0) return 0.0; // Avoid division by zero
+    if (totalPages == 0) return 0.0;
     return (currentPage / totalPages) * 100;
   }
 }

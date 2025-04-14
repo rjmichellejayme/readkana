@@ -85,10 +85,6 @@ flutter:
     - assets/images/logo-pink.jpg
     - assets/images/logo-beige.jpg
     - assets/fonts/
-    - assets/sounds/rain.mp3
-    - assets/sounds/forest.mp3
-    - assets/sounds/ocean.mp3
-    - assets/sounds/cafe.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -352,10 +352,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Book> _generatePlaceholderBooks() {
+    final bookNames = [
+      'Harry Potter',
+      'The Hobbit',
+      'Pride and Prejudice',
+      'The Great Gatsby',
+      'To Kill a Mockingbird',
+      'One Piece',
+      'Naruto',
+      'The Little Prince',
+      'The Alchemist'
+    ];
+
     return List.generate(9, (index) {
       return Book(
         id: 'placeholder_$index',
-        title: 'Book Name',
+        title: bookNames[index],
         filePath: '',
         totalPages: 1,
         currentPage: 0,
