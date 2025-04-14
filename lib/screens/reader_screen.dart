@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/book.dart';
 import '../services/reading_service.dart';
-import '../services/sound_service.dart';
 import '../services/theme_service.dart';
 
 class ReaderScreen extends StatefulWidget {
@@ -107,9 +106,57 @@ class _ReaderScreenState extends State<ReaderScreen>
   }
 
   Widget _buildReaderContent() {
+    final List<Map<String, String>> chapters = [
+      {
+        'title': 'Chapter 1: The Beginning',
+        'content': '''
+In the heart of a bustling city, where the modern world meets ancient traditions, 
+lived a young girl named Sakura. Her life was ordinary until that fateful spring 
+morning when cherry blossoms danced through the air like pink snowflakes.
+
+She had always wondered about the old bookshop at the corner of her street, 
+with its weathered wooden sign and windows that seemed to glow with an otherworldly light. 
+Today would be the day she finally stepped inside.
+
+The bell above the door chimed softly as she entered, sending echoes through 
+the dusty shelves that stretched toward the ceiling. The air smelled of old 
+paper and forgotten stories, each book holding countless adventures within its pages.'''
+      },
+      {
+        'title': 'Chapter 2: The Discovery',
+        'content': '''
+The ancient tome lay heavy in Sakura's hands, its leather cover worn smooth 
+by countless readers before her. Golden characters shimmered across its spine, 
+shifting and changing as if alive.
+
+"This isn't just any book," the old shopkeeper whispered, his eyes twinkling 
+with knowledge accumulated over decades. "It chooses its reader."
+
+Sakura's fingers trembled as she opened the cover. The pages seemed to breathe, 
+releasing the scent of magic and possibility. Words began to flow across the 
+previously blank pages, forming themselves into a story she somehow knew was 
+meant only for her.'''
+      },
+      {
+        'title': 'Chapter 3: The Journey Begins',
+        'content': '''
+As night fell over the city, Sakura sat in her room, the mysterious book open 
+before her. The words on the page began to glow with a soft blue light, and 
+she felt a gentle tugging at the edges of her consciousness.
+
+"To begin your journey," the book seemed to whisper, "you must first believe 
+in the magic that resides within these pages."
+
+Without hesitation, Sakura placed her hand on the glowing text. The world 
+around her began to shimmer and fade, replaced by a landscape straight out 
+of her wildest dreams. The adventure she had always longed for was finally 
+beginning.'''
+      }
+    ];
+
     return PageView.builder(
       controller: _pageController,
-      itemCount: widget.book.totalPages,
+      itemCount: chapters.length,
       itemBuilder: (context, index) {
         return Container(
           color: _backgroundColor,
@@ -121,27 +168,24 @@ class _ReaderScreenState extends State<ReaderScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Chapter heading
-              if (index % 5 == 0) // Just for demonstration
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24.0),
-                  child: Text(
-                    'Chapter ${(index ~/ 5) + 1}',
-                    style: GoogleFonts.fredoka(
-                      fontSize: _fontSize + 6.0,
-                      fontWeight: FontWeight.bold,
-                      color: _textColor,
-                    ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: Text(
+                  chapters[index]['title']!,
+                  style: GoogleFonts.fredoka(
+                    fontSize: _fontSize + 6.0,
+                    fontWeight: FontWeight.bold,
+                    color: _textColor,
                   ),
                 ),
+              ),
 
-              // Page content
+              // Chapter content
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Text(
-                    'Page ${index + 1} content\n\n' +
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n' +
-                        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                    chapters[index]['content']!,
                     style: GoogleFonts.lora(
                       fontSize: _fontSize,
                       height: 1.5,
@@ -151,13 +195,13 @@ class _ReaderScreenState extends State<ReaderScreen>
                 ),
               ),
 
-              // Page number at bottom
+              // Page number
               Align(
                 alignment: Alignment.center,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Text(
-                    '${index + 1}',
+                    'Page ${index + 1}',
                     style: GoogleFonts.fredoka(
                       fontSize: _fontSize - 2.0,
                       color: _textColor.withOpacity(0.5),
@@ -292,20 +336,6 @@ class _ReaderScreenState extends State<ReaderScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Left side - Sound button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.volume_up,
-                              color: Colors.white, size: 22),
-                          onPressed: () {
-                            _showSoundSettings();
-                          },
-                          tooltip: 'Sound Settings',
-                        ),
-                      ),
 
                       // Center - Page indicator
                       Container(
@@ -951,70 +981,6 @@ class _ReaderScreenState extends State<ReaderScreen>
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(16),
-          ),
-          child: Consumer<SoundService>(
-            builder: (context, soundService, child) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.music_note, color: primaryColor, size: 28),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Background Sounds',
-                        style: GoogleFonts.fredoka(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Sound options
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: soundService.availableSounds.length,
-                    itemBuilder: (context, index) {
-                      final sound = soundService.availableSounds[index];
-                      final isSelected = sound == soundService.currentSound;
-
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isSelected ? primaryColor : Colors.grey[300],
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.music_note,
-                            color: isSelected ? Colors.white : Colors.grey[700],
-                          ),
-                        ),
-                        title: Text(
-                          sound.name,
-                          style: GoogleFonts.fredoka(
-                            fontSize: 16,
-                            color: isSelected ? primaryColor : Colors.grey[700],
-                          ),
-                        ),
-                        onTap: () {
-                          isSelected
-                              ? soundService.stopSound()
-                              : soundService.playSound(sound);
-                        },
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
           ),
         ),
       ),

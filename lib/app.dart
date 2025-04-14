@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'services/theme_service.dart';
-import 'services/sound_service.dart';
 import 'services/reading_service.dart';
 import 'services/achievement_service.dart';
 import 'services/search_service.dart';
@@ -18,7 +17,6 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeService()),
-        ChangeNotifierProvider(create: (_) => SoundService()),
         ChangeNotifierProvider(create: (_) => ReadingService()),
         ChangeNotifierProvider(create: (_) => AchievementService()),
         ChangeNotifierProvider(create: (_) => SearchService()),
