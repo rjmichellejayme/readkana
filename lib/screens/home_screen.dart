@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
@@ -68,88 +67,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _handleAddBook(BuildContext context) async {
-    try {
-      // Pick the file with bytes data
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['epub'],
-        allowMultiple: false,
-        withData: true, // Important: This ensures we get the bytes
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        final file = result.files.first;
-        final bytes = file.bytes;
-
-        if (bytes == null) {
-          throw Exception('Could not read file data');
-        }
-
-        // Create a unique filename using timestamp
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        const extension = '.epub';
-        final newFileName = 'book_$timestamp$extension';
-
-        // Get the application support directory
-        final appDir = await getApplicationSupportDirectory();
-        final bookDir = Directory('${appDir.path}/books');
-
-        // Create books directory if it doesn't exist
-        if (!await bookDir.exists()) {
-          await bookDir.create(recursive: true);
-        }
-
-        // Save the file using bytes
-        final savedFile = File('${bookDir.path}/$newFileName');
-        await savedFile.writeAsBytes(bytes);
-
-        // Generate unique book ID
-        final bookId = timestamp.toString();
-
-        // Create new book
-        final newBook = Book(
-          id: bookId,
-          title: file.name,
-          filePath: savedFile.path,
-          totalPages: 100, // Default value
-          currentPage: 0,
-          readingTime: 0,
-          readingSpeed: 0,
-        );
-
-        // Save to ReadingService
-        final readingService =
-            Provider.of<ReadingService>(context, listen: false);
-        await readingService.addBook(newBook);
-
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Book added successfully!',
-              style: GoogleFonts.fredoka(
-                color: const Color(0xFFF4A0BA), // Always pink
-              ),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      print("Error adding book: $e");
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error adding book: ${e.toString()}',
-            style: GoogleFonts.fredoka(),
-          ),
-          backgroundColor: Colors.red,
+    // TODO: Replace with your preferred book adding implementation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Book adding feature not implemented',
+          style: GoogleFonts.fredoka(),
         ),
-      );
-    }
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   void _openBookDetails(BuildContext context, Book book) {
@@ -177,7 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Text(
           'Are you sure you want to delete "${book.title}"?',
           style: GoogleFonts.fredoka(
-            color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
+            color: _isDarkMode
+                ? const Color(0xFFF4A0BA)
+                : primaryColor, // Pink in dark mode
           ),
         ),
         actions: [
@@ -255,7 +184,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             'Hello, Reader!',
             style: GoogleFonts.fredoka(
-              color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
+              color: _isDarkMode
+                  ? const Color(0xFFF4A0BA)
+                  : primaryColor, // Pink in dark mode
               fontSize: 32,
               fontWeight: FontWeight.bold,
               shadows: [
@@ -272,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 18.0),
             child: IconButton(
-              icon: Icon(Icons.search, color: _isDarkMode ? Colors.white : primaryColor),
+              icon: Icon(Icons.search,
+                  color: _isDarkMode ? Colors.white : primaryColor),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -326,7 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: GoogleFonts.fredoka(
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
-                          color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
+                          color: _isDarkMode
+                              ? const Color(0xFFF4A0BA)
+                              : primaryColor, // Pink in dark mode
                         ),
                       ),
                     ],
@@ -527,7 +461,9 @@ class _HomeScreenState extends State<HomeScreen> {
           color: _isDarkMode ? Colors.black : Colors.white, // Dynamic color
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           border: Border.all(
-            color: _isDarkMode ? Colors.white : Colors.black, // Dynamic border color
+            color: _isDarkMode
+                ? Colors.white
+                : Colors.black, // Dynamic border color
             width: 1.0,
           ),
           boxShadow: [
@@ -545,10 +481,12 @@ class _HomeScreenState extends State<HomeScreen> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.transparent, // Transparent to inherit container color
+            backgroundColor:
+                Colors.transparent, // Transparent to inherit container color
             elevation: 0,
             selectedItemColor: pinkColor, // Set selected icon color to pink
-            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
+            unselectedItemColor: pinkColor
+                .withOpacity(0.6), // Set unselected icon color to lighter pink
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.book),
