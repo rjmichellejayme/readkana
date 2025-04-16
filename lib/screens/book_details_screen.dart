@@ -32,6 +32,7 @@ class BookDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Maintaining your app's color scheme
     const primaryColor = Color(0xFFDA6D8F);
+    const shelfColor = Color(0xFFC49A6C);
     const backgroundColor = Color(0xFFF3EFEA);
     const lightPink = Color(0xFFF4A0BA);
 
