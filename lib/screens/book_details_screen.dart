@@ -370,42 +370,43 @@ class BookDetailsScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () {
-                // Update the lastReadDate directly here
-                book.lastReadDate = DateTime.now();
-                // Notify listeners that the book has been updated
+                onPressed: () {
+                  // Update the lastReadDate directly here
+                  book.lastReadDate = DateTime.now();
+                  // Notify listeners that the book has been updated
+        
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReaderScreen(book: book),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 4,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Continue Reading',
-                    style: GoogleFonts.fredoka(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReaderScreen(book: book),
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 20),
-                ],
+                  elevation: 4,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Continue Reading',
+                      style: GoogleFonts.fredoka(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 20),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 12),
             Row(
               children: [
