@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +13,20 @@ class BookDetailsScreen extends StatelessWidget {
     Key? key,
     required this.book,
   }) : super(key: key);
+
+  // Helper function to format the last read date
+  String _formatLastReadDate(DateTime lastRead) {
+    final now = DateTime.now();
+    if (now.difference(lastRead).inSeconds < 60) {
+      return 'Just Now';
+    } else if (now.difference(lastRead).inHours < 1) {
+      return '${now.difference(lastRead).inMinutes} minutes ago';
+    } else if (now.difference(lastRead).inDays < 1) {
+      return '${now.difference(lastRead).inHours} hours ago';
+    } else {
+      return '${lastRead.day}/${lastRead.month}/${lastRead.year}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +255,7 @@ class BookDetailsScreen extends StatelessWidget {
                               ),
                               Text(
                                 book.lastReadDate != null
-                                    ? '${book.lastReadDate!.day}/${book.lastReadDate!.month}/${book.lastReadDate!.year}'
+                                    ? _formatLastReadDate(book.lastReadDate!)
                                     : 'Never',
                                 style: GoogleFonts.fredoka(
                                   color: Colors.black87,
@@ -357,39 +369,43 @@ class BookDetailsScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () {
-                context.read<ReadingService>().startReading(book);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReaderScreen(book: book),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 4,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Continue Reading',
-                    style: GoogleFonts.fredoka(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                onPressed: () {
+                  // Update the lastReadDate directly here
+                  book.lastReadDate = DateTime.now();
+                  // Notify listeners that the book has been updated
+        
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReaderScreen(book: book),
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 20),
-                ],
+                  elevation: 4,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Continue Reading',
+                      style: GoogleFonts.fredoka(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 20),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 12),
             Row(
               children: [
