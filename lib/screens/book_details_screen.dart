@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +14,25 @@ class BookDetailsScreen extends StatelessWidget {
     required this.book,
   }) : super(key: key);
 
+  // Helper function to format the last read date
+  String _formatLastReadDate(DateTime lastRead) {
+    final now = DateTime.now();
+    if (now.difference(lastRead).inSeconds < 60) {
+      return 'Just Now';
+    } else if (now.difference(lastRead).inHours < 1) {
+      return '${now.difference(lastRead).inMinutes} minutes ago';
+    } else if (now.difference(lastRead).inDays < 1) {
+      return '${now.difference(lastRead).inHours} hours ago';
+    } else {
+      return '${lastRead.day}/${lastRead.month}/${lastRead.year}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Maintaining your app's color scheme
     const primaryColor = Color(0xFFDA6D8F);
+    const shelfColor = Color(0xFFC49A6C);
     const backgroundColor = Color(0xFFF3EFEA);
     const lightPink = Color(0xFFF4A0BA);
 
@@ -243,7 +256,7 @@ class BookDetailsScreen extends StatelessWidget {
                               ),
                               Text(
                                 book.lastReadDate != null
-                                    ? '${book.lastReadDate!.day}/${book.lastReadDate!.month}/${book.lastReadDate!.year}'
+                                    ? _formatLastReadDate(book.lastReadDate!)
                                     : 'Never',
                                 style: GoogleFonts.fredoka(
                                   color: Colors.black87,
@@ -358,7 +371,10 @@ class BookDetailsScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                context.read<ReadingService>().startReading(book);
+                // Update the lastReadDate directly here
+                book.lastReadDate = DateTime.now();
+                // Notify listeners that the book has been updated
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
