@@ -137,8 +137,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               type: BottomNavigationBarType.fixed,
               backgroundColor: _isDarkMode ? Colors.black : Colors.white,
               elevation: 0,
-            selectedItemColor: pinkColor, // Set selected icon color to pink
-            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
+              selectedItemColor: pinkColor, // Set selected icon color to pink
+              unselectedItemColor: pinkColor.withOpacity(
+                  0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),
@@ -199,14 +200,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.settings, color: Colors.white),
-          onPressed: () {
-            // Navigate to settings
-          },
-        ),
-      ],
     );
   }
 

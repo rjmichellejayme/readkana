@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as path;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
 import '../models/book.dart';
 import '../services/reading_service.dart';
 import 'book_details_screen.dart';
@@ -507,68 +503,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSpotlightBook(Book book, Color primaryColor) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: primaryColor,
-              border: Border.all(
-                color: Colors.white,
-                width: 4.0,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.pink.withOpacity(0.3),
-                  spreadRadius: 4,
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-              // image: book.coverImage != null && book.coverImage!.isNotEmpty
-              //     ? AssetImage(book.coverImage!) as ImageProvider
-              //     : null,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            book.title,
-            style: GoogleFonts.fredoka(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (book.author != null)
-            Text(
-              book.author!,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: book.progressPercentage / 100,
-              backgroundColor: Colors.grey[200],
-              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-              minHeight: 8,
-            ),
-          ),
-        ],
       ),
     );
   }

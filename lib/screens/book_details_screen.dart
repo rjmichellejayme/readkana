@@ -32,7 +32,6 @@ class BookDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Maintaining your app's color scheme
     const primaryColor = Color(0xFFDA6D8F);
-    const shelfColor = Color(0xFFC49A6C);
     const backgroundColor = Color(0xFFF3EFEA);
     const lightPink = Color(0xFFF4A0BA);
 
@@ -165,7 +164,8 @@ class BookDetailsScreen extends StatelessWidget {
                       value: book.currentPage /
                           (book.totalPages > 0 ? book.totalPages : 1),
                       backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(primaryColor),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(primaryColor),
                       minHeight: 10,
                       borderRadius: BorderRadius.circular(5),
                     ),

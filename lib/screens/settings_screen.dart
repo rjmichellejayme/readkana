@@ -5,6 +5,7 @@ import 'bookmarks_screen.dart';
 import 'profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
+import 'edit_profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -25,6 +26,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _textSize = 16.0;
   String _selectedTheme = 'Default';
   int _selectedIndex = 2;
+
+  // User information
+  String _userName = 'Jane Doe';
+  String _userEmail = 'jane.doe@example.com';
+  String _userInitials = 'JD';
 
   @override
   void initState() {
@@ -85,7 +91,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: _darkModeEnabled ? Colors.black : Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: _darkModeEnabled ? Colors.white : primaryColor),
+          icon: Icon(Icons.arrow_back,
+              color: _darkModeEnabled ? Colors.white : primaryColor),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -205,8 +212,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               type: BottomNavigationBarType.fixed,
               backgroundColor: _darkModeEnabled ? Colors.black : Colors.white,
               elevation: 0,
-            selectedItemColor: pinkColor, // Set selected icon color to pink
-            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
+              selectedItemColor: pinkColor, // Set selected icon color to pink
+              unselectedItemColor: pinkColor.withOpacity(
+                  0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),
@@ -275,7 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               radius: 30,
               backgroundColor: lightPink,
               child: Text(
-                'JD',
+                _userInitials,
                 style: GoogleFonts.fredoka(
                   fontSize: 24,
                   color: Colors.white,
@@ -289,14 +297,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Jane Doe',
+                    _userName,
                     style: GoogleFonts.fredoka(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
-                    'jane.doe@example.com',
+                    _userEmail,
                     style: GoogleFonts.fredoka(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -307,8 +315,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             IconButton(
               icon: Icon(Icons.edit, color: primaryColor),
-              onPressed: () {
-                // Handle edit profile
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EditProfileScreen(),
+                  ),
+                );
+
+                // Refresh the settings screen if changes were made
+                if (result == true) {
+                  final prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    // Update the displayed user information
+                    final userName = prefs.getString('userName') ?? 'Jane Doe';
+                    final userEmail =
+                        prefs.getString('userEmail') ?? 'jane.doe@example.com';
+                    final userInitials =
+                        prefs.getString('userInitials') ?? 'JD';
+
+                    // Update the UI with new values
+                    _userName = userName;
+                    _userEmail = userEmail;
+                    _userInitials = userInitials;
+                  });
+                }
               },
             ),
           ],

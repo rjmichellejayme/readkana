@@ -3,7 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
 import 'home_screen.dart';
+import '../models/book.dart';
+import 'reader_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
 class BookmarksScreen extends StatefulWidget {
   const BookmarksScreen({super.key});
@@ -25,59 +28,63 @@ class _BookmarksScreenState extends State<BookmarksScreen>
   final List<Map<String, dynamic>> _mockPages = [
     {
       'page': 42,
-      'bookTitle': 'The Art of Reading Japanese',
-      'chapter': 'Chapter 3: Basic Kanji',
+      'bookTitle': 'Pride and Prejudice',
+      'chapter': 'Chapter 3: The Meryton Assembly',
     },
     {
       'page': 78,
-      'bookTitle': 'Japanese Grammar Guide',
-      'chapter': 'Chapter 5: Particles',
+      'bookTitle': 'The Great Gatsby',
+      'chapter': 'Chapter 5: The Green Light',
     },
     {
       'page': 156,
-      'bookTitle': 'Mastering Hiragana',
-      'chapter': 'Chapter 8: Practice Exercises',
+      'bookTitle': 'Little Women',
+      'chapter': 'Chapter 8: Jo Meets Apollo',
     },
   ];
 
   final List<Map<String, dynamic>> _mockNotes = [
     {
-      'title': 'Important Grammar Rule',
-      'content': 'Use は for topic marking and が for subject marking',
-      'bookTitle': 'Japanese Grammar Guide',
+      'title': 'Character Analysis',
+      'content':
+          'Elizabeth Bennet: Strong-willed, intelligent, and prejudiced against Mr. Darcy initially',
+      'bookTitle': 'Pride and Prejudice',
       'date': '2024-04-14',
     },
     {
-      'title': 'Vocabulary List',
-      'content': '食べる (taberu) - to eat\n飲む (nomu) - to drink',
-      'bookTitle': 'Basic Japanese Verbs',
+      'title': 'Symbolic Elements',
+      'content':
+          'The green light represents Gatsby\'s hopes and dreams for the future',
+      'bookTitle': 'The Great Gatsby',
       'date': '2024-04-13',
     },
     {
-      'title': 'Study Reminder',
-      'content': 'Practice writing these kanji 10 times each: 日、月、火',
-      'bookTitle': 'The Art of Reading Japanese',
+      'title': 'Important Quotes',
+      'content':
+          '"I am not afraid of storms, for I am learning how to sail my ship." - Louisa May Alcott',
+      'bookTitle': 'Little Women',
       'date': '2024-04-12',
     },
   ];
 
   final List<Map<String, dynamic>> _mockAnnotations = [
     {
-      'text': 'て-form is used to connect actions in sequence',
-      'bookTitle': 'Japanese Grammar Guide',
-      'chapter': 'Verb Conjugation',
+      'text':
+          '"It is a truth universally acknowledged..." - Opening line significance',
+      'bookTitle': 'Pride and Prejudice',
+      'chapter': 'Chapter 1: First Impressions',
       'color': Color(0xFFF4A0BA),
     },
     {
-      'text': 'Remember: カタカナ is used for foreign words',
-      'bookTitle': 'Writing Systems',
-      'chapter': 'Katakana Introduction',
+      'text': 'Symbolism of the Valley of Ashes in relation to American Dream',
+      'bookTitle': 'The Great Gatsby',
+      'chapter': 'Chapter 2: The Valley',
       'color': Color(0xFFDA6D8F),
     },
     {
-      'text': 'Exception to the う-verb conjugation rule',
-      'bookTitle': 'Verb Mastery',
-      'chapter': 'Irregular Verbs',
+      'text': 'Beth\'s piano symbolizes both joy and tragedy',
+      'bookTitle': 'Little Women',
+      'chapter': 'Beth\'s Chapter',
       'color': Color(0xFFC49A6C),
     },
   ];
@@ -175,9 +182,10 @@ class _BookmarksScreenState extends State<BookmarksScreen>
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
                 color: primaryColor,
               ),
+              dividerColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
               labelColor: Colors.white,
               unselectedLabelColor: primaryColor,
               labelStyle: GoogleFonts.fredoka(
@@ -235,8 +243,9 @@ class _BookmarksScreenState extends State<BookmarksScreen>
               type: BottomNavigationBarType.fixed,
               backgroundColor: _isDarkMode ? Colors.black : Colors.white,
               elevation: 0,
-            selectedItemColor: pinkColor, // Set selected icon color to pink
-            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
+              selectedItemColor: pinkColor, // Set selected icon color to pink
+              unselectedItemColor: pinkColor.withOpacity(
+                  0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),
@@ -274,38 +283,60 @@ class _BookmarksScreenState extends State<BookmarksScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            leading: Container(
-              width: 50,
-              height: 70,
-              decoration: BoxDecoration(
-                color: shelfColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  "P.${page['page']}",
-                  style: GoogleFonts.fredoka(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+          child: InkWell(
+            onTap: () {
+              final book = Book(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: page['bookTitle']!,
+                author: 'Author Name',
+                filePath: '',
+                totalPages: 300, // Set a reasonable total pages number
+                currentPage: math.min((page['page'] as int) - 1,
+                    299), // Ensure page is within bounds
+                readingTime: 0,
+                readingSpeed: 0.0,
+              );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReaderScreen(book: book),
+                ),
+              );
+            },
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              leading: Container(
+                width: 50,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: shelfColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    "P.${page['page']}",
+                    style: GoogleFonts.fredoka(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-            title: Text(
-              page['bookTitle'],
-              style: GoogleFonts.fredoka(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: primaryColor,
+              title: Text(
+                page['bookTitle']!,
+                style: GoogleFonts.fredoka(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: primaryColor,
+                ),
               ),
-            ),
-            subtitle: Text(
-              page['chapter'],
-              style: GoogleFonts.fredoka(
-                fontSize: 14,
-                color: Colors.grey[600],
+              subtitle: Text(
+                page['chapter']!,
+                style: GoogleFonts.fredoka(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
               ),
             ),
           ),
