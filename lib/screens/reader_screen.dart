@@ -68,10 +68,11 @@ class _ReaderScreenState extends State<ReaderScreen>
   }
 
   void _onPageChanged() {
+    if (!_pageController.hasClients) return;
+
     final currentPage = _pageController.page?.round() ?? 0;
     if (currentPage != widget.book.currentPage) {
-      context.read<ReadingService>().updateReadingProgress(
-          currentPage); // Use the correct method with single parameter
+      context.read<ReadingService>().updateReadingProgress(currentPage);
     }
   }
 
@@ -154,10 +155,24 @@ beginning.'''
       }
     ];
 
+    // Calculate the starting chapter and page
+    int bookmarkPage = widget.book.currentPage;
+
     return PageView.builder(
       controller: _pageController,
-      itemCount: chapters.length,
+      itemCount: widget.book
+          .totalPages, // Use the book's total pages instead of chapters.length
       itemBuilder: (context, index) {
+        // Show appropriate content based on the page number
+        String chapterTitle = 'Chapter ${(index ~/ 100) + 1}';
+        String chapterContent = 'Page content for page ${index + 1}';
+
+        // If we have actual content for this page, use it
+        if (index < chapters.length) {
+          chapterTitle = chapters[index]['title'] ?? chapterTitle;
+          chapterContent = chapters[index]['content'] ?? chapterContent;
+        }
+
         return Container(
           color: _backgroundColor,
           padding: EdgeInsets.symmetric(
@@ -167,11 +182,10 @@ beginning.'''
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Chapter heading
               Padding(
                 padding: const EdgeInsets.only(bottom: 24.0),
                 child: Text(
-                  chapters[index]['title']!,
+                  chapterTitle,
                   style: GoogleFonts.fredoka(
                     fontSize: _fontSize + 6.0,
                     fontWeight: FontWeight.bold,
@@ -179,13 +193,11 @@ beginning.'''
                   ),
                 ),
               ),
-
-              // Chapter content
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Text(
-                    chapters[index]['content']!,
+                    chapterContent,
                     style: GoogleFonts.lora(
                       fontSize: _fontSize,
                       height: 1.5,
@@ -194,8 +206,6 @@ beginning.'''
                   ),
                 ),
               ),
-
-              // Page number
               Align(
                 alignment: Alignment.center,
                 child: Padding(

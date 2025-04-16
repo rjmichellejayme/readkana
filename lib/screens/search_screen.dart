@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'bookdetailsscreen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -27,6 +28,8 @@ class _SearchScreenState extends State<SearchScreen> {
       'coverColor': const Color(0xFF9ED9CC),
       'pages': 278,
       'rating': 4.5,
+      'description':
+          'When orphaned Mary Lennox comes to live at her uncle\'s great house on the Yorkshire Moors, she finds it full of secrets. The mansion has nearly one hundred rooms, and her uncle keeps himself locked up. And at night, she hears the sound of crying down one of the long corridors.',
     },
     {
       'title': 'Little Women',
@@ -34,6 +37,8 @@ class _SearchScreenState extends State<SearchScreen> {
       'coverColor': const Color(0xFFE6B89C),
       'pages': 354,
       'rating': 4.8,
+      'description':
+          'Following the lives of four sisters, Meg, Jo, Beth and Amy March, Little Women is a classic tale of sisterhood, family, love, and ambition. Set against the backdrop of Civil War America, the story follows their journey from childhood to womanhood.',
     },
     {
       'title': 'Pride and Prejudice',
@@ -41,6 +46,8 @@ class _SearchScreenState extends State<SearchScreen> {
       'coverColor': const Color(0xFFAFD5AA),
       'pages': 432,
       'rating': 4.7,
+      'description':
+          'Pride and Prejudice follows the turbulent relationship between Elizabeth Bennet, the daughter of a country gentleman, and Fitzwilliam Darcy, a rich aristocratic landowner. They must overcome their respective pride and prejudices to achieve their happily ever after.',
     },
     {
       'title': 'To Kill a Mockingbird',
@@ -354,7 +361,12 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           child: InkWell(
             onTap: () {
-              // Navigate to book details
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookDetailsScreen(book: book),
+                ),
+              );
             },
             borderRadius: BorderRadius.circular(15),
             child: Padding(

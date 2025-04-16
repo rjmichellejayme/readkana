@@ -341,4 +341,34 @@ class ReadingService extends ChangeNotifier {
       throw Exception('Failed to delete book: $e');
     }
   }
+
+  Future<void> updateBook(Book updatedBook) async {
+    final index = _books.indexWhere((book) => book.id == updatedBook.id);
+    if (index != -1) {
+      _books[index] = updatedBook;
+      await _saveBooks();
+      notifyListeners();
+    }
+  }
+
+  Future<void> _saveBooks() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Save book IDs
+    final bookIds = _books.map((book) => book.id).toList();
+    await prefs.setStringList('book_ids', bookIds);
+
+    // Save individual book details
+    for (var book in _books) {
+      await prefs.setString('book_title_${book.id}', book.title);
+      await prefs.setString('book_path_${book.id}', book.filePath);
+      await prefs.setInt('book_currentPage_${book.id}', book.currentPage);
+      await prefs.setInt('book_readingTime_${book.id}', book.readingTime);
+      await prefs.setDouble('book_readingSpeed_${book.id}', book.readingSpeed);
+      if (book.lastReadDate != null) {
+        await prefs.setString('book_lastReadDate_${book.id}',
+            book.lastReadDate!.toIso8601String());
+      }
+    }
+  }
 }
