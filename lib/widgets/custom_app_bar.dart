@@ -22,22 +22,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: showSearch
           ? TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search books...',
                 border: InputBorder.none,
                 hintStyle: TextStyle(color: Colors.white70),
               ),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
               onChanged: onSearch,
             )
           : Text(title),
       actions: [
-        if (showThemeSwitcher) ThemeSwitcher(),
+        if (showThemeSwitcher) const ThemeSwitcher(),
         ...?actions,
       ],
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

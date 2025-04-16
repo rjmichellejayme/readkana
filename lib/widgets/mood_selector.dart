@@ -26,14 +26,14 @@ class MoodSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'How are you feeling today?',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,
@@ -63,7 +63,7 @@ class MoodSelector extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isSelected ? Colors.blue.withOpacity(0.1) : null,
             borderRadius: BorderRadius.circular(8),
@@ -75,9 +75,9 @@ class MoodSelector extends StatelessWidget {
             children: [
               Text(
                 emoji,
-                style: TextStyle(fontSize: 32),
+                style: const TextStyle(fontSize: 32),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(

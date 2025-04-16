@@ -14,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'bookmarks_screen.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
+import '../utils/theme_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,12 +25,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       Provider.of<ReadingService>(context, listen: false).loadBooksFromPrefs();
+    });
+    _loadDarkMode();
+  }
+
+  Future<void> _loadDarkMode() async {
+    final isDarkMode = await isDarkModeEnabled();
+    setState(() {
+      _isDarkMode = isDarkMode;
     });
   }
 
@@ -40,17 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
         _selectedIndex = 0;
       });
     } else if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const BookmarksScreen()),
       );
     } else if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SettingsScreen()),
       );
     } else if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ProfileScreen()),
       );
@@ -77,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Create a unique filename using timestamp
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final extension = '.epub';
+        const extension = '.epub';
         final newFileName = 'book_$timestamp$extension';
 
         // Get the application support directory
@@ -118,7 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(
             content: Text(
               'Book added successfully!',
-              style: GoogleFonts.fredoka(),
+              style: GoogleFonts.fredoka(
+                color: const Color(0xFFF4A0BA), // Always pink
+              ),
             ),
             backgroundColor: Colors.green,
           ),
@@ -150,6 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDeleteBookDialog(BuildContext context, Book book) {
+    const primaryColor = Color(0xFFDA6D8F); // Define primaryColor here
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -162,7 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         content: Text(
           'Are you sure you want to delete "${book.title}"?',
-          style: GoogleFonts.fredoka(),
+          style: GoogleFonts.fredoka(
+            color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
+          ),
         ),
         actions: [
           TextButton(
@@ -229,9 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
     const lightPink = Color(0xFFF4A0BA);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3EFEA),
+      backgroundColor: _isDarkMode ? Colors.black : const Color(0xFFF3EFEA),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _isDarkMode ? Colors.black : Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false, // This will remove the back button
         title: Padding(
@@ -239,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Text(
             'Hello, Reader!',
             style: GoogleFonts.fredoka(
-              color: primaryColor,
+              color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
               fontSize: 32,
               fontWeight: FontWeight.bold,
               shadows: [
@@ -256,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 18.0),
             child: IconButton(
-              icon: Icon(Icons.search, color: primaryColor),
+              icon: Icon(Icons.search, color: _isDarkMode ? Colors.white : primaryColor),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -310,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: GoogleFonts.fredoka(
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
-                          color: primaryColor,
+                          color: _isDarkMode ? const Color(0xFFF4A0BA) : primaryColor, // Pink in dark mode
                         ),
                       ),
                     ],
@@ -501,15 +517,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBottomNavigationBar(Color primaryColor) {
+    const pinkColor = Color(0xFFF4A0BA); // Define the pink color
+
     return Transform.translate(
       offset: const Offset(0, -20),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _isDarkMode ? Colors.black : Colors.white, // Dynamic color
           borderRadius: const BorderRadius.all(Radius.circular(20)),
           border: Border.all(
-            color: Colors.black,
+            color: _isDarkMode ? Colors.white : Colors.black, // Dynamic border color
             width: 1.0,
           ),
           boxShadow: [
@@ -527,10 +545,10 @@ class _HomeScreenState extends State<HomeScreen> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent, // Transparent to inherit container color
             elevation: 0,
-            selectedItemColor: primaryColor,
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: pinkColor, // Set selected icon color to pink
+            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.book),

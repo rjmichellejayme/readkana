@@ -13,11 +13,11 @@ class EmojiReaction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4,
@@ -37,14 +37,14 @@ class EmojiReaction extends StatelessWidget {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               children: recentEmojis
                   .map((emoji) => _buildEmojiButton(emoji))
                   .toList(),
             ),
-            Divider(),
+            const Divider(),
           ],
           Text(
             'All Reactions',
@@ -53,7 +53,7 @@ class EmojiReaction extends StatelessWidget {
               color: Colors.grey[600],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -74,10 +74,10 @@ class EmojiReaction extends StatelessWidget {
         onTap: () => onEmojiSelected(emoji),
         borderRadius: BorderRadius.circular(4),
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Text(
             emoji,
-            style: TextStyle(fontSize: 24),
+            style: const TextStyle(fontSize: 24),
           ),
         ),
       ),

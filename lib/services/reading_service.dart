@@ -264,9 +264,7 @@ class ReadingService extends ChangeNotifier {
       _recentBooks.insert(0, addedBook);
 
       // Update current book if needed
-      if (_currentBook == null) {
-        _currentBook = addedBook;
-      }
+      _currentBook ??= addedBook;
 
       notifyListeners();
     } catch (e) {

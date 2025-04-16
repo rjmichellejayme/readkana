@@ -24,6 +24,8 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const pinkColor = Color(0xFFF4A0BA); // Define the pink color
+
     return Column(
       children: [
         GestureDetector(
@@ -38,6 +40,7 @@ class BookCard extends StatelessWidget {
             style: GoogleFonts.fredoka(
               fontSize: 12,
               fontWeight: FontWeight.w500,
+              color: pinkColor,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -99,7 +102,7 @@ class BookCard extends StatelessWidget {
   }
 
   Widget _buildListCard(BuildContext context) {
-    final useBeigeLogo = 0 % 2 == 0; // Adjust logic if needed for list
+    const useBeigeLogo = 0 % 2 == 0; // Adjust logic if needed for list
 
     return Card(
       elevation: 2,

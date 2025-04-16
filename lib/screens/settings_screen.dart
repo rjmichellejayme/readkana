@@ -4,6 +4,7 @@ import 'login_screen.dart';
 import 'bookmarks_screen.dart';
 import 'profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'home_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -23,6 +24,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _darkModeEnabled = false;
   double _textSize = 16.0;
   String _selectedTheme = 'Default';
+  int _selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDarkMode();
+  }
+
+  Future<void> _loadDarkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _darkModeEnabled = prefs.getBool('darkMode') ?? false;
+    });
+  }
 
   Future<void> _saveTheme(String themeName, Color themeColor) async {
     final prefs = await SharedPreferences.getInstance();
@@ -30,15 +45,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setInt('themeColor', themeColor.value);
   }
 
+  Future<void> _toggleDarkMode(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', value);
+    setState(() {
+      _darkModeEnabled = value;
+    });
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+      );
+    } else if (index == 2) {
+      // Already on Settings screen
+      return;
+    } else if (index == 3) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    const pinkColor = Color(0xFFF4A0BA); // Define the pink color
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _darkModeEnabled ? Colors.black : backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _darkModeEnabled ? Colors.black : Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: primaryColor),
+          icon: Icon(Icons.arrow_back, color: _darkModeEnabled ? Colors.white : primaryColor),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -46,7 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(
           'Settings',
           style: GoogleFonts.fredoka(
-            color: primaryColor,
+            color: _darkModeEnabled ? Colors.white : primaryColor,
             fontSize: 32,
             fontWeight: FontWeight.bold,
             shadows: [
@@ -90,12 +137,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1),
                 _buildSwitchSetting(
                   'Dark Mode',
-                  'Use dark theme for reading',
+                  'Use dark theme for app theme',
                   _darkModeEnabled,
-                  (value) {
-                    setState(() {
-                      _darkModeEnabled = value;
-                    });
+                  (value) async {
+                    _toggleDarkMode(value);
                   },
                 ),
               ]),
@@ -137,10 +182,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _darkModeEnabled ? Colors.black : Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             border: Border.all(
-              color: Colors.black,
+              color: _darkModeEnabled ? Colors.white : Colors.black,
               width: 1.0,
             ),
             boxShadow: [
@@ -155,32 +200,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             child: BottomNavigationBar(
-              currentIndex: 2, // Set to 2 for Settings tab
-              onTap: (index) {
-                if (index == 0) {
-                  // Navigate back to home/read screen
-                  Navigator.pop(context);
-                } else if (index == 1) {
-                  // Navigate to Bookmarks screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BookmarksScreen()),
-                  );
-                } else if (index == 3) {
-                  // Navigate to Profile screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()),
-                  );
-                }
-              },
+              currentIndex: _selectedIndex, // Set to 2 for Settings tab
+              onTap: _onItemTapped,
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
+              backgroundColor: _darkModeEnabled ? Colors.black : Colors.white,
               elevation: 0,
-              selectedItemColor: primaryColor,
-              unselectedItemColor: Colors.grey,
+            selectedItemColor: pinkColor, // Set selected icon color to pink
+            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),

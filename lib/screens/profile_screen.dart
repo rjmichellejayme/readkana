@@ -4,9 +4,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'bookmarks_screen.dart';
 import 'settings_screen.dart';
 import 'home_screen.dart';
+import '../utils/theme_utils.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -36,10 +37,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'Sun'
   ];
 
+  bool _isDarkMode = false;
+  int _selectedIndex = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDarkMode();
+  }
+
+  Future<void> _loadDarkMode() async {
+    final isDarkMode = await isDarkModeEnabled();
+    setState(() {
+      _isDarkMode = isDarkMode;
+    });
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
+    } else if (index == 3) {
+      // Already on Profile screen
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    const pinkColor = Color(0xFFF4A0BA); // Define the pink color
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _isDarkMode ? Colors.black : backgroundColor,
       body: CustomScrollView(
         slivers: [
           _buildAppBar(),
@@ -73,10 +114,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _isDarkMode ? Colors.black : Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             border: Border.all(
-              color: Colors.black,
+              color: _isDarkMode ? Colors.white : Colors.black,
               width: 1.0,
             ),
             boxShadow: [
@@ -91,36 +132,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             child: BottomNavigationBar(
-              currentIndex: 3, // Set to 3 for Profile tab
-              onTap: (index) {
-                if (index == 0) {
-                  // Navigate to home/read screen and remove all previous routes
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                } else if (index == 1) {
-                  // Navigate to Bookmarks screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BookmarksScreen()),
-                  );
-                } else if (index == 2) {
-                  // Navigate to Settings screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsScreen()),
-                  );
-                }
-              },
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
+              backgroundColor: _isDarkMode ? Colors.black : Colors.white,
               elevation: 0,
-              selectedItemColor: primaryColor,
-              unselectedItemColor: Colors.grey,
+            selectedItemColor: pinkColor, // Set selected icon color to pink
+            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),
@@ -458,10 +476,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         reservedSize: 30,
                       ),
                     ),
-                    topTitles: AxisTitles(
+                    topTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
-                    rightTitles: AxisTitles(
+                    rightTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
                   ),

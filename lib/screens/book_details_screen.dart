@@ -32,7 +32,7 @@ class BookDetailsScreen extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(top: 12.0),
           child: IconButton(
-            icon: Icon(Icons.arrow_back, color: primaryColor, size: 28),
+            icon: const Icon(Icons.arrow_back, color: primaryColor, size: 28),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -40,7 +40,7 @@ class BookDetailsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 12.0, right: 8.0),
             child: IconButton(
-              icon: Icon(Icons.edit, color: primaryColor, size: 24),
+              icon: const Icon(Icons.edit, color: primaryColor, size: 24),
               onPressed: () {
                 // Handle edit book details
               },
@@ -153,7 +153,7 @@ class BookDetailsScreen extends StatelessWidget {
                       value: book.currentPage /
                           (book.totalPages > 0 ? book.totalPages : 1),
                       backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                      valueColor: const AlwaysStoppedAnimation<Color>(primaryColor),
                       minHeight: 10,
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -223,7 +223,7 @@ class BookDetailsScreen extends StatelessWidget {
                             color: lightPink.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.calendar_today,
                             color: primaryColor,
                             size: 24,
@@ -268,7 +268,7 @@ class BookDetailsScreen extends StatelessWidget {
                             color: lightPink.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.access_time,
                             color: primaryColor,
                             size: 24,
@@ -311,7 +311,7 @@ class BookDetailsScreen extends StatelessWidget {
                             color: lightPink.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.speed,
                             color: primaryColor,
                             size: 24,
@@ -400,7 +400,7 @@ class BookDetailsScreen extends StatelessWidget {
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: primaryColor,
-                      side: BorderSide(color: primaryColor),
+                      side: const BorderSide(color: primaryColor),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -409,7 +409,7 @@ class BookDetailsScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.bookmark, size: 18),
+                        const Icon(Icons.bookmark, size: 18),
                         const SizedBox(width: 6),
                         Text(
                           'Bookmarks',
@@ -427,7 +427,7 @@ class BookDetailsScreen extends StatelessWidget {
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: primaryColor,
-                      side: BorderSide(color: primaryColor),
+                      side: const BorderSide(color: primaryColor),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -436,7 +436,7 @@ class BookDetailsScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.note_alt, size: 18),
+                        const Icon(Icons.note_alt, size: 18),
                         const SizedBox(width: 6),
                         Text(
                           'Notes',

@@ -126,9 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Log In',
                         style: TextStyle(
@@ -284,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomeScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     });
   }
@@ -297,6 +297,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToSignup() {
     print('Navigating to sign up screen');
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SignupScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
   }
 }

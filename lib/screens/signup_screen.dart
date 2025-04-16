@@ -110,7 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         'Terms',
                         style: TextStyle(
                           fontSize: 12,
-                          color: const Color(0xFFDA6D8F),
+                          color: Color(0xFFDA6D8F),
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -130,7 +130,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         'Conditions',
                         style: TextStyle(
                           fontSize: 12,
-                          color: const Color(0xFFDA6D8F),
+                          color: Color(0xFFDA6D8F),
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -160,9 +160,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Sign Up',
                         style: TextStyle(
@@ -311,7 +311,7 @@ class _SignupScreenState extends State<SignupScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => LoginScreen()),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     });
   }
@@ -320,12 +320,12 @@ class _SignupScreenState extends State<SignupScreen> {
     // Navigate to your app's main screen as a guest
     print('Continuing as guest');
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => HomeScreen()));
+        context, MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   void _navigateToLogin() {
     // Navigate to login screen
     print('Navigating to login screen');
-    Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
   }
 }

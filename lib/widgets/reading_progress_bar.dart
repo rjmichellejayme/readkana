@@ -29,7 +29,7 @@ class ReadingProgressBar extends StatelessWidget {
           ),
           minHeight: height,
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

@@ -44,7 +44,7 @@ class TextUtils {
   }
 
   static String formatBookStats(int pages, int minutes) {
-    return '${pages} pages • ${formatReadingTime(minutes)}';
+    return '$pages pages • ${formatReadingTime(minutes)}';
   }
 
   static String formatStreak(int days) {

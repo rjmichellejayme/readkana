@@ -12,7 +12,7 @@ class FontSizeSelector extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        const Text(
           'Font Size',
           style: TextStyle(fontSize: 16),
         ),
@@ -26,7 +26,7 @@ class FontSizeSelector extends StatelessWidget {
             readingService.updateFontSize(value);
           },
         ),
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('A', style: TextStyle(fontSize: 12)),

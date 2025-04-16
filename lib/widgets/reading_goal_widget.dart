@@ -11,14 +11,14 @@ class ReadingGoalWidget extends StatelessWidget {
     
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Daily Reading Goal',
                   style: TextStyle(
                     fontSize: 18,
@@ -26,18 +26,18 @@ class ReadingGoalWidget extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () => _showGoalDialog(context, readingService),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             LinearProgressIndicator(
               value: readingService.dailyProgress / readingService.dailyGoal,
               backgroundColor: Colors.grey[200],
               minHeight: 8,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -70,11 +70,11 @@ class ReadingGoalWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Set Daily Goal'),
+        title: const Text('Set Daily Goal'),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Pages per day',
             suffixText: 'pages',
           ),
@@ -82,7 +82,7 @@ class ReadingGoalWidget extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -92,7 +92,7 @@ class ReadingGoalWidget extends StatelessWidget {
               }
               Navigator.pop(context);
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           ),
         ],
       ),

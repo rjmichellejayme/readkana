@@ -17,11 +17,11 @@ class HighlightToolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4,
@@ -36,19 +36,19 @@ class HighlightToolbar extends StatelessWidget {
           _buildColorButton(Colors.green),
           _buildColorButton(Colors.blue),
           _buildColorButton(Colors.pink),
-          VerticalDivider(),
+          const VerticalDivider(),
           IconButton(
-            icon: Icon(Icons.note_add),
+            icon: const Icon(Icons.note_add),
             onPressed: onAddNote,
             tooltip: 'Add Note',
           ),
           IconButton(
-            icon: Icon(Icons.share),
+            icon: const Icon(Icons.share),
             onPressed: onShare,
             tooltip: 'Share',
           ),
           IconButton(
-            icon: Icon(Icons.copy),
+            icon: const Icon(Icons.copy),
             onPressed: onCopy,
             tooltip: 'Copy',
           ),
@@ -59,7 +59,7 @@ class HighlightToolbar extends StatelessWidget {
 
   Widget _buildColorButton(Color color) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: InkWell(
         onTap: () => onColorSelected(color),
         child: Container(

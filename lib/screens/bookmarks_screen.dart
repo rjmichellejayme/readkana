@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
 import 'home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookmarksScreen extends StatefulWidget {
-  const BookmarksScreen({Key? key}) : super(key: key);
+  const BookmarksScreen({super.key});
 
   @override
   State<BookmarksScreen> createState() => _BookmarksScreenState();
@@ -18,6 +19,8 @@ class _BookmarksScreenState extends State<BookmarksScreen>
   final backgroundColor = const Color(0xFFF3EFEA);
   final shelfColor = const Color(0xFFC49A6C);
   final lightPink = const Color(0xFFF4A0BA);
+  bool _isDarkMode = false;
+  int _selectedIndex = 1;
 
   final List<Map<String, dynamic>> _mockPages = [
     {
@@ -83,6 +86,36 @@ class _BookmarksScreenState extends State<BookmarksScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadDarkMode();
+  }
+
+  Future<void> _loadDarkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      // Already on Bookmarks screen
+      return;
+    } else if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
+    } else if (index == 3) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
   }
 
   @override
@@ -93,10 +126,12 @@ class _BookmarksScreenState extends State<BookmarksScreen>
 
   @override
   Widget build(BuildContext context) {
+    const pinkColor = Color(0xFFF4A0BA); // Define the pink color
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _isDarkMode ? Colors.black : backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _isDarkMode ? Colors.black : Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: primaryColor),
@@ -107,7 +142,7 @@ class _BookmarksScreenState extends State<BookmarksScreen>
         title: Text(
           'Bookmarks',
           style: GoogleFonts.fredoka(
-            color: primaryColor,
+            color: _isDarkMode ? Colors.white : primaryColor,
             fontSize: 32,
             fontWeight: FontWeight.bold,
             shadows: [
@@ -177,10 +212,10 @@ class _BookmarksScreenState extends State<BookmarksScreen>
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _isDarkMode ? Colors.black : Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             border: Border.all(
-              color: Colors.black,
+              color: _isDarkMode ? Colors.white : Colors.black,
               width: 1.0,
             ),
             boxShadow: [
@@ -195,36 +230,13 @@ class _BookmarksScreenState extends State<BookmarksScreen>
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(20)),
             child: BottomNavigationBar(
-              currentIndex: 1, // Set to 1 for Bookmarks tab
-              onTap: (index) {
-                if (index == 0) {
-                  // Navigate to home/read screen and remove all previous routes
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    (route) => false,
-                  );
-                } else if (index == 2) {
-                  // Navigate to Settings screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsScreen()),
-                  );
-                } else if (index == 3) {
-                  // Navigate to Profile screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()),
-                  );
-                }
-              },
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
+              backgroundColor: _isDarkMode ? Colors.black : Colors.white,
               elevation: 0,
-              selectedItemColor: primaryColor,
-              unselectedItemColor: Colors.grey,
+            selectedItemColor: pinkColor, // Set selected icon color to pink
+            unselectedItemColor: pinkColor.withOpacity(0.6), // Set unselected icon color to lighter pink
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.book),

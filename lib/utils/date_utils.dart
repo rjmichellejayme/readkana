@@ -8,7 +8,7 @@ class DateUtils {
   }
 
   static bool isYesterday(DateTime date) {
-    final yesterday = DateTime.now().subtract(Duration(days: 1));
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
     return isSameDay(date, yesterday);
   }
 

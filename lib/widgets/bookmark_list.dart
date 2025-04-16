@@ -39,15 +39,15 @@ class BookmarkList extends StatelessWidget {
           background: Container(
             color: Colors.red,
             alignment: Alignment.centerRight,
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.delete, color: Colors.white),
+            padding: const EdgeInsets.only(right: 16),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
           onDismissed: (direction) => onDelete(bookmark),
           child: ListTile(
-            leading: Icon(Icons.bookmark),
+            leading: const Icon(Icons.bookmark),
             title: Text(
               'Page ${bookmark.pageNumber}',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
               bookmark.note ?? 'No note',

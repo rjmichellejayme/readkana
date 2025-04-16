@@ -16,7 +16,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  List<String> _selectedFilters = [];
+  final List<String> _selectedFilters = [];
   bool _isSearching = false;
 
   // Mock data
@@ -24,28 +24,28 @@ class _SearchScreenState extends State<SearchScreen> {
     {
       'title': 'The Secret Garden',
       'author': 'Frances Hodgson Burnett',
-      'coverColor': Color(0xFF9ED9CC),
+      'coverColor': const Color(0xFF9ED9CC),
       'pages': 278,
       'rating': 4.5,
     },
     {
       'title': 'Little Women',
       'author': 'Louisa May Alcott',
-      'coverColor': Color(0xFFE6B89C),
+      'coverColor': const Color(0xFFE6B89C),
       'pages': 354,
       'rating': 4.8,
     },
     {
       'title': 'Pride and Prejudice',
       'author': 'Jane Austen',
-      'coverColor': Color(0xFFAFD5AA),
+      'coverColor': const Color(0xFFAFD5AA),
       'pages': 432,
       'rating': 4.7,
     },
     {
       'title': 'To Kill a Mockingbird',
       'author': 'Harper Lee',
-      'coverColor': Color(0xFFF9C46B),
+      'coverColor': const Color(0xFFF9C46B),
       'pages': 336,
       'rating': 4.9,
     },
@@ -411,8 +411,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.star,
-                                size: 16, color: const Color(0xFFFFD700)),
+                            const Icon(Icons.star,
+                                size: 16, color: Color(0xFFFFD700)),
                             const SizedBox(width: 4),
                             Text(
                               '${book['rating']}',

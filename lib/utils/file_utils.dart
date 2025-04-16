@@ -61,7 +61,7 @@ class FileUtils {
     final directory = Directory(booksDir);
     final files = await directory.list().toList();
     return files
-        .where((entity) => entity is File)
+        .whereType<File>()
         .map((entity) => entity.path)
         .where((path) => path.endsWith('.epub') || path.endsWith('.pdf'))
         .toList();
@@ -72,7 +72,7 @@ class FileUtils {
     final directory = Directory(coversDir);
     final files = await directory.list().toList();
     return files
-        .where((entity) => entity is File)
+        .whereType<File>()
         .map((entity) => entity.path)
         .where((path) => path.endsWith('.jpg') || path.endsWith('.png'))
         .toList();

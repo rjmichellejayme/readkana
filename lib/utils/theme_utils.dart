@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeUtils {
   static Color getContrastColor(Color color) {
@@ -54,4 +55,9 @@ class ThemeUtils {
       color: getReadableTextColor(context),
     );
   }
+}
+
+Future<bool> isDarkModeEnabled() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('darkMode') ?? false;
 }
