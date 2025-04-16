@@ -9,7 +9,7 @@ class Book {
   final String filePath;
   final int totalPages;
   final int currentPage;
-  final DateTime? lastReadDate;
+  DateTime? lastReadDate;
   final int readingTime;
   final double readingSpeed;
   final List<String> tags;
